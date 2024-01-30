@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.Google;
+
 namespace Redi.Api
 {
     public class Program
@@ -10,6 +12,20 @@ namespace Redi.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //builder.Services.AddIdentity<IdentityUser, IdentityRole>();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; //может все таки JWT? 
+            }).AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+            });
+
+            builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -19,9 +35,9 @@ namespace Redi.Api
             }
 
             app.UseHttpsRedirection();
+            app.UseMvc();
 
-            app.UseAuthorization();
-
+            app.UseAuthentication();
 
             app.MapControllers();
 

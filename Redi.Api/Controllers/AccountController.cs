@@ -5,7 +5,7 @@ using Redi.Domain.Services;
 namespace Redi.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
