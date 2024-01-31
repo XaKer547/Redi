@@ -1,4 +1,9 @@
-using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using Redi.Api.Infrastructure;
+using Redi.Api.Infrastructure.Interfaces;
+using System.Text;
 
 namespace Redi.Api
 {
@@ -12,16 +17,41 @@ namespace Redi.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //builder.Services.AddIdentity<IdentityUser, IdentityRole>();
+            builder.Services.AddSignalR();
+
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+
+                options.Stores.ProtectPersonalData = true;
+
+                options.Lockout.AllowedForNewUsers = false;
+
+                options.Password.RequiredLength = 6;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            });
+
+            builder.Services.AddScoped<IJwtGenerator, JwtService>();
+            builder.Services.AddScoped<IMailService, MailService>();
 
             builder.Services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; //может все таки JWT? 
-            }).AddGoogle(googleOptions =>
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
             {
-                googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                options.RequireHttpsMetadata = false;
+
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                };
             });
 
             builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
@@ -33,6 +63,9 @@ namespace Redi.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
             app.UseMvc();

@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Redi.Api.Infrastructure.Interfaces;
 using Redi.Domain.Models.Account;
-using Redi.Domain.Services;
 
 namespace Redi.Api.Controllers
 {
@@ -8,51 +9,54 @@ namespace Redi.Api.Controllers
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService)
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMailService _mailService;
+        public AccountController(UserManager<IdentityUser> userManager, IMailService mailService)
         {
-            _accountService = accountService;
+            _userManager = userManager;
+            _mailService = mailService;
         }
 
-        [HttpPost("PasswordRecovery")]
-        public async Task<IActionResult> RequestPasswordRecoveryAsync(PasswordRecoveryRequestDTO request)
+        [HttpPost("Ae")]
+        public async Task<IActionResult> Check()
+        {
+            await _mailService.SendOtpCodeAsync("FIFA228Nothack@gmail.com", "Лох");
+
+            return Ok();
+        }
+
+        [HttpPost("PasswordReset")]
+        public async Task<IActionResult> RequestPasswordResetAsync(PasswordRecoveryRequestDTO request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await _accountService.VerifyEmailExist(request.Email))
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user is null)
             {
                 return BadRequest("Такой почты не существует");
             }
 
-            await _accountService.RequestPasswordRecoveryAsync(request);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            await _mailService.SendOtpCodeAsync(user.Email, token);
 
             return Ok();
         }
 
-        [HttpPost("OtpVerification")]
-        public async Task<IActionResult> VerifyOtpAsync(OtpVerificationDTO verification)
+        [HttpPost("PasswordReset")]
+        public async Task<IActionResult> ResetPasswordAsync(ResetPasswordDTO verification)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _accountService.VerifyOtpCodeAsync(verification); //get userId or token
+            var user = await _userManager.FindByEmailAsync(verification.Email);
 
-            if (!result)
+            var result = await _userManager.ResetPasswordAsync(user, verification.OtpCode, verification.NewPassword);
+
+            if (!result.Succeeded)
                 return BadRequest();
-
-            return Ok();
-        }
-
-        [HttpPatch("ChangePassword")]
-        public async Task<IActionResult> ChangePasswordAsync(ChangePasswordDTO changePassword)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            //getUserId
-
-            await _accountService.ChangePasswordAsync(1, changePassword.Password);
 
             return Ok();
         }

@@ -1,31 +1,30 @@
 ﻿using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Redi.Api.Infrastructure.Interfaces;
 using Redi.Domain.Models.Account;
-using Redi.Domain.Services;
-using IAuthorizationService = Redi.Domain.Services.IAuthorizationService;
 
 namespace Redi.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthorizationController : Controller
+    public class AuthorizationController : ControllerBase
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IAccountService _accountService;
         private readonly UserManager<IdentityUser> _userManager;
-
-        public AuthorizationController(IAuthorizationService authorizationService, IAccountService accountService, UserManager<IdentityUser> userManager)
+        private readonly IJwtGenerator _jwtService;
+        public AuthorizationController(UserManager<IdentityUser> userManager, IJwtGenerator jwtService)
         {
-            _authorizationService = authorizationService;
-            _accountService = accountService;
             _userManager = userManager;
+            _jwtService = jwtService;
         }
 
-        [HttpPost("SignInViaGoogle/{id}")]
-        public async Task<IActionResult> SignInViaGoogle(string id)
+        [HttpPost("SignInViaGoogle")]
+        public async Task<IActionResult> SignInViaGoogle([FromBody] string token)
         {
-            var googleUser = await GoogleJsonWebSignature.ValidateAsync(id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var googleUser = await GoogleJsonWebSignature.ValidateAsync(token);
 
             if (googleUser is null)
                 return BadRequest();
@@ -57,18 +56,28 @@ namespace Redi.Api.Controllers
                 await _userManager.AddLoginAsync(user, userInfo);
             }
 
-            return Ok(); // user на JSON 
+            return Ok(_jwtService.CreateToken(user.Id, "user")); // user на JSON 
         }
 
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUpAsync(SignUpDTO signUp)
         {
-            if (await _accountService.VerifyEmailExist(signUp.Email))
-            {
-                return BadRequest("Эта почта уже занята");
-            }
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            await _authorizationService.SignUpAsync(signUp);
+            var user = await _userManager.FindByEmailAsync(signUp.Email);
+
+            if (user is not null)
+                return BadRequest("Эта почта уже занята");
+
+            await _userManager.CreateAsync(new IdentityUser()
+            {
+                PhoneNumber = signUp.PhoneNumber,
+                Email = signUp.Email,
+                NormalizedEmail = signUp.Email.ToLower(),
+                UserName = signUp.Fullname,
+                NormalizedUserName = signUp.Fullname.ToLower(),
+            }, signUp.Password);
 
             return Ok();
         }
@@ -76,13 +85,20 @@ namespace Redi.Api.Controllers
         [HttpPost("SignIn")]
         public async Task<IActionResult> SignInAsync(SignInDTO signIn)
         {
-            var result = await _authorizationService.SingInAsync(signIn);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (!result.Success)
+            var user = await _userManager.FindByEmailAsync(signIn.Email);
+
+            if (user is null)
+                return BadRequest("Пользователь не найден");
+
+            var result = await _userManager.CheckPasswordAsync(user, signIn.Password);
+
+            if (!result)
                 return BadRequest();
-            return Ok();
 
-            return Ok(result.Token);
+            return Ok(_jwtService.CreateToken(user.Id, "user"));
         }
     }
 }

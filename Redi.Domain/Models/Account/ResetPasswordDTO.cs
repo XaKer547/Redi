@@ -2,15 +2,17 @@
 
 namespace Redi.Domain.Models.Account
 {
-    public class SignUpDTO
+    public class ResetPasswordDTO
     {
         [Required]
-        public string Fullname { get; set; }
+        [StringLength(6, MinimumLength = 6)]
+        public string OtpCode { get; set; }
+
         [Required]
-        public string PhoneNumber { get; set; }
-        [Required]
+        [EmailAddress]
         public string Email { get; set; }
+
         [Required]
-        public string Password { get; set; }
+        public string NewPassword { get; set; }
     }
 }
