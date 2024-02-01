@@ -1,10 +1,12 @@
-﻿namespace Redi.DataAccess.Data.Entities
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace Redi.DataAccess.Data.Entities
 {
-    public class User
+    public class User : IdentityUser
     {
-        public int Id { get; set; }
-        public string Fullname { get; set; }
+        public float Balance { get; set; }
 
-
+        public ICollection<Transaction> Transactions { get; set; } = new HashSet<Transaction>();
+        public ICollection<Card> Cards { get; set; } = new HashSet<Card>();
     }
 }

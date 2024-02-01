@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redi.Api", "Redi.Api\Redi.Api.csproj", "{44E548DB-7359-428A-A658-ECBF9B3AD0AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redi.Api", "Redi.Api\Redi.Api.csproj", "{44E548DB-7359-428A-A658-ECBF9B3AD0AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redi.Domain", "Redi.Domain\Redi.Domain.csproj", "{DEA46B42-2313-43B2-968F-5D0E8D8EE805}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redi.Domain", "Redi.Domain\Redi.Domain.csproj", "{DEA46B42-2313-43B2-968F-5D0E8D8EE805}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redi.DataAccess", "Redi.DataAccess\Redi.DataAccess.csproj", "{F36BE35C-AD5E-4813-ABB2-1FA287FBDD3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redi.DataAccess", "Redi.DataAccess\Redi.DataAccess.csproj", "{D1FBEB88-2937-4CCB-82AB-E642647A4C74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{DEA46B42-2313-43B2-968F-5D0E8D8EE805}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEA46B42-2313-43B2-968F-5D0E8D8EE805}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEA46B42-2313-43B2-968F-5D0E8D8EE805}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F36BE35C-AD5E-4813-ABB2-1FA287FBDD3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F36BE35C-AD5E-4813-ABB2-1FA287FBDD3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F36BE35C-AD5E-4813-ABB2-1FA287FBDD3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F36BE35C-AD5E-4813-ABB2-1FA287FBDD3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1FBEB88-2937-4CCB-82AB-E642647A4C74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1FBEB88-2937-4CCB-82AB-E642647A4C74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1FBEB88-2937-4CCB-82AB-E642647A4C74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1FBEB88-2937-4CCB-82AB-E642647A4C74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
