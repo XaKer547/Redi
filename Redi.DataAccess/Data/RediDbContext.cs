@@ -6,11 +6,5 @@ namespace Redi.DataAccess.Data
     public class RediDbContext : IdentityDbContext
     {
         public RediDbContext(DbContextOptions options) : base(options) { }
-
-
-
-
-
-
     }
 }

@@ -7,7 +7,6 @@ namespace Redi.DataAccess.Data.Entities
         public User(string userName) : base(userName) { }
         public User() { }
 
-
         public float Balance { get; set; }
         public string? Picture { get; set; }
         public ICollection<Transaction> Transactions { get; set; } = new HashSet<Transaction>();
