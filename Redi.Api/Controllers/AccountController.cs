@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Redi.Api.Infrastructure.Interfaces;
+using Redi.DataAccess.Data.Entities;
 using Redi.Domain.Models.Account;
 
 namespace Redi.Api.Controllers
@@ -9,9 +10,9 @@ namespace Redi.Api.Controllers
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IMailService _mailService;
-        public AccountController(UserManager<IdentityUser> userManager, IMailService mailService)
+        public AccountController(UserManager<User> userManager, IMailService mailService)
         {
             _userManager = userManager;
             _mailService = mailService;
@@ -20,12 +21,13 @@ namespace Redi.Api.Controllers
         [HttpPost("Ae")]
         public async Task<IActionResult> Check()
         {
-            await _mailService.SendOtpCodeAsync("FIFA228Nothack@gmail.com", "Лох");
+            var ip = Request.HttpContext.Connection.RemoteIpAddress;
+            //await _mailService.SendOtpCodeAsync("FIFA228Nothack@gmail.com", "Лох");
 
             return Ok();
         }
 
-        [HttpPost("PasswordReset")]
+        [HttpPost("RequestPasswordReset")]
         public async Task<IActionResult> RequestPasswordResetAsync(PasswordRecoveryRequestDTO request)
         {
             if (!ModelState.IsValid)
@@ -45,7 +47,7 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("PasswordReset")]
+        [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordDTO verification)
         {
             if (!ModelState.IsValid)

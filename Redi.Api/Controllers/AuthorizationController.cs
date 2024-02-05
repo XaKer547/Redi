@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Redi.Api.Infrastructure.Interfaces;
+using Redi.DataAccess.Data.Entities;
 using Redi.Domain.Models.Account;
 
 namespace Redi.Api.Controllers
@@ -10,9 +11,9 @@ namespace Redi.Api.Controllers
     [Route("api/[controller]")]
     public class AuthorizationController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IJwtGenerator _jwtService;
-        public AuthorizationController(UserManager<IdentityUser> userManager, IJwtGenerator jwtService)
+        public AuthorizationController(UserManager<User> userManager, IJwtGenerator jwtService)
         {
             _userManager = userManager;
             _jwtService = jwtService;
@@ -33,7 +34,7 @@ namespace Redi.Api.Controllers
 
             if (user is null)
             {
-                user = new IdentityUser(googleUser.Name)
+                user = new User(googleUser.Name)
                 {
                     Email = googleUser.Email,
                     EmailConfirmed = googleUser.EmailVerified,
@@ -62,6 +63,7 @@ namespace Redi.Api.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUpAsync(SignUpDTO signUp)
         {
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -70,7 +72,7 @@ namespace Redi.Api.Controllers
             if (user is not null)
                 return BadRequest("Эта почта уже занята");
 
-            await _userManager.CreateAsync(new IdentityUser()
+            await _userManager.CreateAsync(new User()
             {
                 PhoneNumber = signUp.PhoneNumber,
                 Email = signUp.Email,

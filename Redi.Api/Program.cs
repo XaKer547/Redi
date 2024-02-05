@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Redi.Api.Infrastructure;
 using Redi.Api.Infrastructure.Interfaces;
+using Redi.DataAccess.Data;
+using Redi.DataAccess.Data.Entities;
 using System.Text;
 
 namespace Redi.Api
@@ -13,26 +16,29 @@ namespace Redi.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddLogging(x => x.AddConsole());
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddSignalR();
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
+            builder.Services.AddDbContext<RediDbContext>(opts => opts.UseInMemoryDatabase("test"))
+                .AddIdentity<User, IdentityRole>(options =>
+                {
+                    options.User.RequireUniqueEmail = true;
 
-                options.Stores.ProtectPersonalData = true;
+                    options.Lockout.AllowedForNewUsers = false;
 
-                options.Lockout.AllowedForNewUsers = false;
-
-                options.Password.RequiredLength = 6;
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-            });
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                })
+                .AddEntityFrameworkStores<RediDbContext>()
+                .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<IJwtGenerator, JwtService>();
             builder.Services.AddScoped<IMailService, MailService>();
@@ -67,7 +73,7 @@ namespace Redi.Api
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
 
             app.UseAuthentication();
