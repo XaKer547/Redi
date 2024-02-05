@@ -1,6 +1,6 @@
 ﻿namespace Redi.DataAccess.Data.Entities
 {
-    public class OrderStatus
+    public class DeliveryStatus
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public Delivery Delivery { get; set; }
-        public ICollection<OrderStatus> OrderStatuses { get; set; } = new HashSet<OrderStatus>();
+        public ICollection<DeliveryState> OrderStates { get; set; } = new HashSet<DeliveryState>();
     }
 }
