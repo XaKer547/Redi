@@ -1,11 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Redi.Api.Helpers;
-using Redi.Api.Infrastructure.Interfaces;
-using Redi.DataAccess.Data.Entities;
-using Redi.Domain.Models.Account;
-
-namespace Redi.Api.Controllers
+﻿namespace Redi.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

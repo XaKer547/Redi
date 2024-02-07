@@ -4,8 +4,8 @@ namespace Redi.DataAccess.Data.Entities
 {
     public class User : IdentityUser
     {
-        public User(string userName) : base(userName) { }
         public User() { }
+        public User(string userName) : base(userName) { }
 
         public float Balance { get; set; }
         public string? Picture { get; set; }

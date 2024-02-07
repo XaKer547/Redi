@@ -6,29 +6,35 @@ namespace Redi.Api.Infrastructure
 {
     public class MailService : IMailService
     {
-        private readonly IConfiguration _configuration;
-        private readonly string _email;
-        public MailService(IConfiguration configuration)
+        private readonly ILogger<MailService> _logger;
+        private readonly SMTPConfiguration _sMTPConfiguration = new SMTPConfiguration();
+
+        public MailService(
+            IConfiguration configuration,
+            ILogger<MailService> logger)
         {
-            _configuration = configuration;
-            _email = _configuration["Authentication:Google:Email"];
+
+            configuration.GetSection("Authentication:Mail").Bind(_sMTPConfiguration);
+
+            _logger = logger;
         }
 
         public async Task SendOtpCodeAsync(string email, string code)
         {
             SmtpClient client = new()
             {
-                DeliveryMethod = SmtpDeliveryMethod.Network,
                 EnableSsl = true,
-                Host = "smtp.gmail.com",
-                Port = 587,
+                Host = _sMTPConfiguration.Smtp,
+                Port = _sMTPConfiguration.Port,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(_email, _configuration["Authentication:Google:Password"])
+                DeliveryFormat = SmtpDeliveryFormat.International,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                Credentials = new NetworkCredential(_sMTPConfiguration.Email, _sMTPConfiguration.Password)
             };
 
             using MailMessage msg = new()
             {
-                From = new MailAddress(_email),
+                From = new MailAddress(_sMTPConfiguration.Email),
                 Subject = "Востановление пароля",
                 IsBodyHtml = true,
                 Body = string.Format("<html><head></head><body><b>Test HTML Email</b></body>")
@@ -42,6 +48,7 @@ namespace Redi.Api.Infrastructure
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "При отправке сообщения произошла ошибка!");
             }
         }
     }

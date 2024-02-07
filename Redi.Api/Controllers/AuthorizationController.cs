@@ -61,6 +61,7 @@ namespace Redi.Api.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUpAsync(SignUpDTO signUp)
         {
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
