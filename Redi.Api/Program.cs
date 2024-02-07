@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Redi.Api.Infrastructure;
 using Redi.Api.Infrastructure.Interfaces;
+using Redi.DataAccess.Data;
+using Redi.DataAccess.Data.Entities;
 using System.Text;
 
 namespace Redi.Api
@@ -17,13 +20,15 @@ namespace Redi.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddSignalR();
+            builder.Services.AddSignalRCore();
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            builder.Services.AddDbContext<RediDbContext>(opt =>
+            {
+                //opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                opt.UseInMemoryDatabase("redi.db");
+            }).AddIdentity<User, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
-
-                options.Stores.ProtectPersonalData = true;
 
                 options.Lockout.AllowedForNewUsers = false;
 
@@ -32,7 +37,8 @@ namespace Redi.Api
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-            });
+            }).AddEntityFrameworkStores<RediDbContext>()
+            .AddDefaultTokenProviders();
 
             builder.Services.AddScoped<IJwtGenerator, JwtService>();
             builder.Services.AddScoped<IMailService, MailService>();
@@ -71,8 +77,13 @@ namespace Redi.Api
             app.UseMvc();
 
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapHub<ChatHub>("/chat");
+            //});
 
             app.Run();
         }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Redi.Domain.DataAnnotation;
+using System.ComponentModel.DataAnnotations;
 
 namespace Redi.Domain.Models.Account
 {
@@ -6,11 +7,18 @@ namespace Redi.Domain.Models.Account
     {
         [Required]
         public string Fullname { get; set; }
+
+        [Phone]
         [Required]
         public string PhoneNumber { get; set; }
+
         [Required]
+        [EmailAddress]
+        [LowerCaseOnly]
         public string Email { get; set; }
+
         [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
     }
 }

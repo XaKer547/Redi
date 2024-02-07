@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Redi.Api.Infrastructure.Interfaces;
+using Redi.DataAccess.Data.Entities;
 using Redi.Domain.Models.Account;
 
 namespace Redi.Api.Controllers
@@ -10,9 +11,9 @@ namespace Redi.Api.Controllers
     [Route("api/[controller]")]
     public class AuthorizationController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IJwtGenerator _jwtService;
-        public AuthorizationController(UserManager<IdentityUser> userManager, IJwtGenerator jwtService)
+        public AuthorizationController(UserManager<User> userManager, IJwtGenerator jwtService)
         {
             _userManager = userManager;
             _jwtService = jwtService;
@@ -33,16 +34,15 @@ namespace Redi.Api.Controllers
 
             if (user is null)
             {
-                user = new IdentityUser(googleUser.Name)
+                user = new User(googleUser.Name)
                 {
                     Email = googleUser.Email,
                     EmailConfirmed = googleUser.EmailVerified,
                     NormalizedEmail = googleUser.Email.ToLower(),
                     NormalizedUserName = googleUser.Name.ToLower(),
-                    //Profile = googleUser.Picture
+                    Picture = googleUser.Picture
                 };
 
-                //что с паролем?
                 var result = await _userManager.CreateAsync(user);
             }
 
@@ -50,8 +50,7 @@ namespace Redi.Api.Controllers
 
             if (!logins.Any(l => l.LoginProvider == "google"))
             {
-                //поменяй часть с JWT
-                var userInfo = new UserLoginInfo("google", googleUser.JwtId, googleUser.Name);
+                var userInfo = new UserLoginInfo("google", googleUser.Email, googleUser.Name);
 
                 await _userManager.AddLoginAsync(user, userInfo);
             }
@@ -70,11 +69,11 @@ namespace Redi.Api.Controllers
             if (user is not null)
                 return BadRequest("Эта почта уже занята");
 
-            await _userManager.CreateAsync(new IdentityUser()
+            await _userManager.CreateAsync(new User()
             {
                 PhoneNumber = signUp.PhoneNumber,
                 Email = signUp.Email,
-                NormalizedEmail = signUp.Email.ToLower(),
+                NormalizedEmail = signUp.Email,
                 UserName = signUp.Fullname,
                 NormalizedUserName = signUp.Fullname.ToLower(),
             }, signUp.Password);
@@ -88,7 +87,7 @@ namespace Redi.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userManager.FindByEmailAsync(signIn.Email);
+            var user = await _userManager.FindByEmailAsync(signIn.Email.ToLower());
 
             if (user is null)
                 return BadRequest("Пользователь не найден");

@@ -9,7 +9,9 @@ namespace Redi.Domain.Models.Account
         [EmailAddress]
         [LowerCaseOnly]
         public string Email { get; set; }
+
         [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
     }
 }
