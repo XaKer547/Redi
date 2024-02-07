@@ -5,7 +5,7 @@ namespace Redi.Api.Helpers
     public static class HttpContextExtensions
     {
         private static readonly HttpClient _client = new();
-        public static async Task<MailRequestInfo> GetRequestInfo(this HttpContext context)
+        public static async Task<RequestInfo> GetRequestInfo(this HttpContext context)
         {
             var userAgent = context.Request.Headers["User-Agent"];
             var uaParser = UAParser.Parser.GetDefault();
@@ -18,7 +18,7 @@ namespace Redi.Api.Helpers
 
             var info = await _client.GetFromJsonAsync<IpInfo>($"http://ip-api.com/json/{ip}");
 
-            return new MailRequestInfo()
+            return new RequestInfo()
             {
                 Browser = browser,
                 Device = os,

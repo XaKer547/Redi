@@ -1,6 +1,6 @@
 ﻿namespace Redi.Api.Models
 {
-    public class MailRequestInfo
+    public class RequestInfo
     {
         public string Ip { get; set; }
         public string Device { get; set; }

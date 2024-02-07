@@ -1,4 +1,12 @@
-﻿namespace Redi.Api.Controllers
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Redi.Api.Helpers;
+using Redi.Api.Infrastructure.Interfaces;
+using Redi.DataAccess.Data.Entities;
+using Redi.Domain.Models.Account;
+
+namespace Redi.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -12,10 +20,10 @@
             _mailService = mailService;
         }
 
+        [Authorize]
         [HttpPost("Ae")]
         public async Task<IActionResult> Check()
         {
-            await _mailService.SendOtpCodeAsync("FIFA228Nothack@gmail.com", "5547", await HttpContext.GetRequestInfo());
 
             return Ok();
         }
@@ -68,7 +76,11 @@
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            await _mailService.SendOtpCodeAsync(user.Email, token, await HttpContext.GetRequestInfo());
+            await _mailService.SendOtpCodeAsync(user.Email, token, new()
+            {
+                RequestInfo = await HttpContext.GetRequestInfo(),
+                UserName = user.UserName
+            });
 
             return Ok();
         }

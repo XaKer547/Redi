@@ -18,9 +18,15 @@ namespace Redi.Api.Infrastructure
         }
         public string CreateToken(string userId, params string[] roles)
         {
-            throw new Exception();
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId)
+            };
 
-            var claims = new List<Claim>();
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256);
 
