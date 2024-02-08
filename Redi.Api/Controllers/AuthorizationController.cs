@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Redi.Api.Infrastructure.Interfaces;
-using Redi.DataAccess.Data.Entities;
+using Redi.DataAccess.Data.Entities.Users;
 using Redi.Domain.Models.Account;
 
 namespace Redi.Api.Controllers
@@ -11,9 +11,9 @@ namespace Redi.Api.Controllers
     [Route("api/[controller]")]
     public class AuthorizationController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<UserBase> _userManager;
         private readonly IJwtGenerator _jwtService;
-        public AuthorizationController(UserManager<User> userManager, IJwtGenerator jwtService)
+        public AuthorizationController(UserManager<UserBase> userManager, IJwtGenerator jwtService)
         {
             _userManager = userManager;
             _jwtService = jwtService;
@@ -34,7 +34,7 @@ namespace Redi.Api.Controllers
 
             if (user is null)
             {
-                user = new User(googleUser.Name)
+                user = new ClientEntity(googleUser.Name)
                 {
                     Email = googleUser.Email,
                     EmailConfirmed = googleUser.EmailVerified,
@@ -55,7 +55,7 @@ namespace Redi.Api.Controllers
                 await _userManager.AddLoginAsync(user, userInfo);
             }
 
-            return Ok(_jwtService.CreateToken(user.Id, "user")); // user на JSON 
+            return Ok(_jwtService.CreateToken(user.Id, "user")); 
         }
 
         [HttpPost("SignUp")]
@@ -70,7 +70,7 @@ namespace Redi.Api.Controllers
             if (user is not null)
                 return BadRequest("Эта почта уже занята");
 
-            await _userManager.CreateAsync(new User()
+            await _userManager.CreateAsync(new UserBase()
             {
                 PhoneNumber = signUp.PhoneNumber,
                 Email = signUp.Email,

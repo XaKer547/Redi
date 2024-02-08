@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Redi.Api.Helpers;
 using Redi.Api.Infrastructure.Interfaces;
-using Redi.DataAccess.Data.Entities;
+using Redi.DataAccess.Data.Entities.Users;
 using Redi.Domain.Models.Account;
 
 namespace Redi.Api.Controllers
@@ -12,20 +11,12 @@ namespace Redi.Api.Controllers
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<ClientEntity> _userManager;
         private readonly IMailService _mailService;
-        public AccountController(UserManager<User> userManager, IMailService mailService)
+        public AccountController(UserManager<ClientEntity> userManager, IMailService mailService)
         {
             _userManager = userManager;
             _mailService = mailService;
-        }
-
-        [Authorize]
-        [HttpPost("Ae")]
-        public async Task<IActionResult> Check()
-        {
-
-            return Ok();
         }
 
         [HttpGet]
