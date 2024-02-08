@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+using Redi.Api.Hubs;
 using Redi.Api.Infrastructure;
 using Redi.Api.Infrastructure.Interfaces;
 using Redi.DataAccess.Data;
-using Redi.DataAccess.Data.Entities;
+using Redi.DataAccess.Data.Entities.Users;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
 using System.Text;
@@ -27,24 +29,26 @@ namespace Redi.Api
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("redi", new OpenApiInfo { Title = "Redi API" });
-                c.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
+                c.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
                     Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT"
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
                         {
-                            Name = "Bearer",
+                            Scheme = "oauth2",
+                            Name = JwtBearerDefaults.AuthenticationScheme,
                             In = ParameterLocation.Header,
                             Reference = new OpenApiReference
                             {
-                                Id = "Bearer",
+                                Id = JwtBearerDefaults.AuthenticationScheme,
                                 Type = ReferenceType.SecurityScheme
                             }
                         },
@@ -58,10 +62,10 @@ namespace Redi.Api
                 c.IncludeXmlComments(xmlFilePath);
             });
 
-            builder.Services.AddSignalRCore();
+            builder.Services.AddSignalR();
 
             builder.Services.AddDbContext<RediDbContext>(opts => opts.UseInMemoryDatabase("test"))
-                .AddIdentity<User, IdentityRole>(options =>
+                .AddIdentity<UserBase, IdentityRole>(options =>
                 {
                     options.User.RequireUniqueEmail = true;
 
@@ -82,21 +86,39 @@ namespace Redi.Api
             builder.Services.AddScoped<IJwtGenerator, JwtService>();
             builder.Services.AddScoped<IMailService, MailService>();
 
-            builder.Services.AddAuthentication(options =>
+            builder.Services.AddAuthentication(opts =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+                opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                opts.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
 
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidateAudience = false,
                     ValidateIssuer = false,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/delivery-chat"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
 
@@ -128,9 +150,9 @@ namespace Redi.Api
 
             using (var scope = app.Services.CreateScope())
             {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserBase>>();
 
-                var user = new User()
+                var user = new UserBase()
                 {
                     Email = "FIFA228Nothack@gmail.com",
                     NormalizedEmail = "FIFA228Nothack@gmail.com".ToLower(),
@@ -149,6 +171,7 @@ namespace Redi.Api
 "password": "Qwe123456"
 } 
  */
+            app.MapHub<ChatHub>("/delivery-chat");
             app.Run();
         }
     }

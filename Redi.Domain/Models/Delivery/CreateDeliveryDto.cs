@@ -1,11 +1,8 @@
-﻿using Redi.DataAccess.Data.Entities.Users;
-
-namespace Redi.DataAccess.Data.Entities
+﻿namespace Redi.Domain.Models.Delivery
 {
-    public class Delivery
+    public class CreateDeliveryDto
     {
-        public int Id { get; set; }
-        public DeliveryType DeliveryType { get; set; }
+        public int OrderId { get; set; }
 
         public string OriginAddress { get; set; }
         public string OriginStateCountry { get; set; }
@@ -20,11 +17,5 @@ namespace Redi.DataAccess.Data.Entities
         public string PackageName { get; set; }
         public string PackageWeight { get; set; }
         public float WorthOfItems { get; set; }
-
-        public int OrderId { get; set; }
-
-        public UserBase Deliverer { get; set; }
-
-        public ICollection<DeliveryState> OrderStates { get; set; } = new HashSet<DeliveryState>();
     }
 }
