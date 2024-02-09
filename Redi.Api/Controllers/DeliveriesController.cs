@@ -19,7 +19,7 @@ namespace Redi.Api.Controllers
         public async Task<IActionResult> Get()
         {
             var user = await _userManager.GetUserAsync(User);
-            var deliveries = await _deliveryService.Get(user.Id);
+            var deliveries = await _deliveryService.GetDeliveries(user.Id);
 
             return Ok(deliveries);
         }
@@ -27,7 +27,7 @@ namespace Redi.Api.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            var delivery = await _deliveryService.Get(id);
+            var delivery = await _deliveryService.GetDelivery(id);
 
             return Ok(delivery);
         }

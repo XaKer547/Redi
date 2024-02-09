@@ -6,8 +6,8 @@ namespace Redi.Domain.Services
     {
         Task CreateDelivery(CreateDeliveryDto deliveryDto);
 
-        Task<IReadOnlyCollection<DeliveryDto>> Get(string userId);
+        Task<IReadOnlyCollection<DeliveryDto>> GetDeliveries(string userId);
 
-        Task<DeliveryDto> Get(int id);
+        Task<DeliveryDto> GetDelivery(int id);
     }
 }

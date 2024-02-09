@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
 using Redi.DataAccess.Data;
 using Redi.DataAccess.Data.Entities;
 using Redi.DataAccess.Data.Entities.Users;
@@ -11,8 +10,8 @@ namespace Redi.Application.Services
 {
     public class DeliveryService : IDeliveryService
     {
-        private RediDbContext _rediDbContext;
-        private UserManager<UserBase> _userManager;
+        private readonly RediDbContext _rediDbContext;
+        private readonly UserManager<UserBase> _userManager;
         public DeliveryService(UserManager<UserBase> userManager, RediDbContext rediDbContext)
         {
             _userManager = userManager;
@@ -22,7 +21,9 @@ namespace Redi.Application.Services
         public async Task CreateDelivery(CreateDeliveryDto deliveryDto)
         {
             var order = await _rediDbContext.Orders.SingleOrDefaultAsync(x => x.Id == deliveryDto.OrderId);
+
             var delivery = await GetDelivererWithMinCountDelivery();
+
             _rediDbContext.Chats.Add(new Chat
             {
                 Id = Guid.NewGuid(),
@@ -34,8 +35,15 @@ namespace Redi.Application.Services
             {
                 OrderId = order.Id,
                 Deliverer = delivery,
-                //DeliveryType = deliveryDto.DeliveryType,
-
+                DeliveryType = DeliveryTypes.Instant,
+                OrderStates = new List<DeliveryState>()
+                {
+                    new DeliveryState()
+                    {
+                        CreatedDate = DateTime.Now,
+                        Status  = DeliveryStatuses.Requested
+                    }
+                },
                 DestinationAddress = deliveryDto.DestinationAddress,
                 DestinationOthers = deliveryDto.DestinationOthers,
                 DestinationPhoneNumber = deliveryDto.DestinationPhoneNumber,
@@ -49,14 +57,17 @@ namespace Redi.Application.Services
                 OriginOthers = deliveryDto.OriginOthers,
             });
 
-            order.OrderStates.Add(new DeliveryState
-            {
-                CreatedDate = DateTime.Now,
-
-            });
-
-
             await _rediDbContext.SaveChangesAsync();
+        }
+
+        public async Task<IReadOnlyCollection<DeliveryDto>> GetDeliveries(string userId)
+        {
+
+        }
+
+        public Task<DeliveryDto> GetDelivery(int id)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task<UserBase> GetDelivererWithMinCountDelivery()

@@ -5,7 +5,8 @@ namespace Redi.DataAccess.Data.Entities
     public class Delivery
     {
         public int Id { get; set; }
-        public DeliveryType DeliveryType { get; set; }
+        public int OrderId { get; set; }
+        public DeliveryTypes DeliveryType { get; set; }
 
         public string OriginAddress { get; set; }
         public string OriginStateCountry { get; set; }
@@ -20,8 +21,6 @@ namespace Redi.DataAccess.Data.Entities
         public string PackageName { get; set; }
         public string PackageWeight { get; set; }
         public float WorthOfItems { get; set; }
-
-        public int OrderId { get; set; }
 
         public UserBase Deliverer { get; set; }
 
