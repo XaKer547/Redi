@@ -21,12 +21,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\Redi.Application\Redi.Application.csproj" />
 		<ProjectReference Include="..\Redi.DataAccess\Redi.DataAccess.csproj" />
 		<ProjectReference Include="..\Redi.Domain\Redi.Domain.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="wwwroot\Profiles\" />
 	</ItemGroup>
 
 </Project>

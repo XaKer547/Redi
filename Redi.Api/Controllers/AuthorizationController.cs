@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Redi.Api.Infrastructure.Interfaces;
+using Redi.DataAccess.Data;
 using Redi.DataAccess.Data.Entities.Users;
 using Redi.Domain.Models.Account;
 
@@ -55,13 +56,12 @@ namespace Redi.Api.Controllers
                 await _userManager.AddLoginAsync(user, userInfo);
             }
 
-            return Ok(_jwtService.CreateToken(user.Id, "user")); 
+            return Ok(_jwtService.CreateToken(user.Id, Roles.Client.ToString()));
         }
 
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUpAsync(SignUpDTO signUp)
         {
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -70,14 +70,15 @@ namespace Redi.Api.Controllers
             if (user is not null)
                 return BadRequest("Эта почта уже занята");
 
-            await _userManager.CreateAsync(new UserBase()
+            var result = await _userManager.CreateAsync(new UserBase()
             {
                 PhoneNumber = signUp.PhoneNumber,
                 Email = signUp.Email,
-                NormalizedEmail = signUp.Email,
                 UserName = signUp.Fullname,
-                NormalizedUserName = signUp.Fullname.ToLower(),
             }, signUp.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
 
             return Ok();
         }
@@ -98,7 +99,9 @@ namespace Redi.Api.Controllers
             if (!result)
                 return BadRequest();
 
-            return Ok(_jwtService.CreateToken(user.Id, "user"));
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(_jwtService.CreateToken(user.Id, roles));
         }
     }
 }

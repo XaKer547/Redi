@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
-
 using Redi.Api.Models.ChatModels;
 using Redi.DataAccess.Data.Entities.Users;
 using Redi.Domain.Services;
@@ -13,9 +12,8 @@ namespace Redi.Api.Hubs
     {
         private readonly UserManager<UserBase> _userManager;
         private readonly IChatService _chatService;
-
         public ChatHub(
-            IChatService chatService, 
+            IChatService chatService,
             UserManager<UserBase> userManager)
         {
             _chatService = chatService;
@@ -28,7 +26,7 @@ namespace Redi.Api.Hubs
 
             var user = await _userManager.GetUserAsync(Context.User);
 
-            await _chatService.AddNewMessage(Guid.Parse(chat.ChatToken), user.Id, chat.Text);
+            await _chatService.AddNewMessageAsync(Guid.Parse(chat.ChatToken), user.Id, chat.Text);
         }
     }
 }

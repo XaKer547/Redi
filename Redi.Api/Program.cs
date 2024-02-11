@@ -7,10 +7,12 @@ using Microsoft.OpenApi.Models;
 using Redi.Api.Hubs;
 using Redi.Api.Infrastructure;
 using Redi.Api.Infrastructure.Interfaces;
+using Redi.Application.Services;
 using Redi.DataAccess.Data;
 using Redi.DataAccess.Data.Entities.Users;
+using Redi.DataAccess.Data.Seeder;
+using Redi.Domain.Services;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System.Reflection;
 using System.Text;
 
 namespace Redi.Api
@@ -56,10 +58,10 @@ namespace Redi.Api
                     }
                 });
 
-                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                string xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                //string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                //string xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-                c.IncludeXmlComments(xmlFilePath);
+                //c.IncludeXmlComments(xmlFilePath);
             });
 
             builder.Services.AddSignalR();
@@ -71,6 +73,8 @@ namespace Redi.Api
 
                     options.Lockout.AllowedForNewUsers = false;
                     options.Lockout.AllowedForNewUsers = false;
+
+                    options.User.AllowedUserNameCharacters += " ";
 
                     options.Password.RequiredLength = 6;
                     options.Password.RequireDigit = false;
@@ -85,6 +89,11 @@ namespace Redi.Api
 
             builder.Services.AddScoped<IJwtGenerator, JwtService>();
             builder.Services.AddScoped<IMailService, MailService>();
+            builder.Services.AddScoped<IChatService, ChatService>();
+            builder.Services.AddScoped<IAccountManager, AccountManager>();
+            builder.Services.AddScoped<IDeliveryService, DeliveryService>();
+
+            builder.Services.AddTransient<DbSeeder>();
 
             builder.Services.AddAuthentication(opts =>
             {
@@ -150,28 +159,14 @@ namespace Redi.Api
 
             using (var scope = app.Services.CreateScope())
             {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserBase>>();
+                var seeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
 
-                var user = new UserBase()
-                {
-                    Email = "FIFA228Nothack@gmail.com",
-                    NormalizedEmail = "FIFA228Nothack@gmail.com".ToLower(),
-                    UserName = "XaKer_547"
-                };
-                userManager.CreateAsync(user, "Qwe123456").Wait();
+                seeder.SeedAll();
             }
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapHub<ChatHub>("/chat");
-            //});
 
-            /*
-{
-"email": "fifa228nothack@gmail.com",
-"password": "Qwe123456"
-} 
- */
             app.MapHub<ChatHub>("/delivery-chat");
+            app.MapHub<DeliveryHub>("/delivery-track");
+
             app.Run();
         }
     }

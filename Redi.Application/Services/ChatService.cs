@@ -4,6 +4,7 @@ using Redi.DataAccess.Data;
 using Redi.DataAccess.Data.Entities;
 using Redi.Domain.Models.Chats;
 using Redi.Domain.Services;
+using Redi.Domain.Services.Response;
 
 namespace Redi.Application.Services
 {
@@ -15,11 +16,25 @@ namespace Redi.Application.Services
             _context = context;
         }
 
-        public async Task AddNewMessage(Guid chatId, string userId, string message)
+        public async Task<ServiceResult> AddNewMessageAsync(Guid chatId, string userId, string message)
         {
+            var result = new ServiceResult();
+
             var chat = _context.Chats.SingleOrDefault(c => c.Id == chatId);
 
+            if (chat is null)
+            {
+                result.Errors.Add("Чата не существует");
+                return result;
+            }
+
             var user = _context.Users.SingleOrDefault(c => c.Id == userId);
+
+            if (user is null)
+            {
+                result.Errors.Add("Пользователь не найден");
+                return result;
+            }
 
             chat.Messages.Add(new ChatMessage()
             {
@@ -31,9 +46,11 @@ namespace Redi.Application.Services
             _context.Chats.Update(chat);
 
             await _context.SaveChangesAsync();
+
+            return result;
         }
 
-        public async Task<bool> CheckJoin(string userId, Guid chatId)
+        public async Task<bool> CheckJoinAsync(string userId, Guid chatId)
         {
             return await _context.Chats.AnyAsync(x => x.Client.Id == userId && x.Id == chatId);
         }
@@ -55,7 +72,7 @@ namespace Redi.Application.Services
             return chat;
         }
 
-        public async Task<IReadOnlyCollection<ChatPreview>> GetChatsPreviews(string userId)
+        public async Task<IReadOnlyCollection<ChatPreview>> GetChatsPreviewsAsync(string userId)
         {
             var user = _context.Users.SingleOrDefault(u => u.Id == userId);
 

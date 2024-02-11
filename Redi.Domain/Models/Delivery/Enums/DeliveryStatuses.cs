@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Redi.DataAccess.Data
+namespace Redi.Domain.Models.Delivery.Enums
 {
     public enum DeliveryStatuses
     {

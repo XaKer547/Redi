@@ -9,11 +9,7 @@ namespace Redi.DataAccess.Data
     {
         public DbSet<Chat> Chats { get; set; }
 
-        public DbSet<Order> Orders { get; set; }
-
         public DbSet<Delivery> Deliveries { get; set; }
-
-        public DbSet<DeliveryType> DeliveryTypes { get; set; }
 
         public DbSet<DeliveryState> DeliveryStates { get; set; }
 

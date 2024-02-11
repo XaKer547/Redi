@@ -10,4 +10,8 @@
     <None Remove="Models\Chats\NewFile1.txt" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Geocoding.Google" Version="4.0.1" />
+  </ItemGroup>
+
 </Project>
