@@ -15,5 +15,7 @@ namespace Redi.Domain.Services
         Task<ServiceResult> UpdateDeliveryStatusAsync(UpdateDeliveryStatusDTO updateDelivery);
         Task<IReadOnlyCollection<DeliveryDto>> GetDeliveriesAsync();
         Task<string?> GetDeliveryClientAsync(int deliveryId);
+        Task<string?> GetDeliveryTrackNumberAsync(int deliveryId);
+        Task<IReadOnlyCollection<DeliveryStatus>> GetDeliveryStatuses(string trackNumber);
     }
 }

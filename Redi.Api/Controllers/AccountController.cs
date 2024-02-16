@@ -28,6 +28,14 @@ namespace Redi.Api.Controllers
             _accountService = accountService;
         }
 
+        [HttpGet("check")]
+        public async Task<IActionResult> Check()
+        {
+            return Ok("Ае");
+        }
+
+        //ngrok http https://localhost:44394/ --host-header="localhost:44394"
+
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetProfileData()
@@ -46,14 +54,20 @@ namespace Redi.Api.Controllers
                 Image = a
             }).ToArray();
 
-            return Ok(new ProfileDTO()
+            var profileInfo = new ProfileDTO()
             {
                 Id = user.Id,
                 UserName = user.UserName,
                 Picture = user.Picture,
-                Balance = ((ClientEntity)user).Balance,
-                Advertisments = ads
-            });
+                Advertisments = ads,
+            };
+
+            if (user is ClientEntity client)
+            {
+                profileInfo.Balance = client.Balance;
+            }
+
+            return Ok();
         }
 
         [HttpPost("UpdateProfile")]
@@ -92,7 +106,7 @@ namespace Redi.Api.Controllers
             var user = await _userManager.FindByIdAsync(id);
 
             if (user is null)
-                return BadRequest();
+                return BadRequest("Пользователь не найден");
 
             return Ok(new ProfilePreview()
             {

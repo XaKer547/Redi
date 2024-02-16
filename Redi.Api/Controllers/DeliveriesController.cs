@@ -20,11 +20,11 @@ namespace Redi.Api.Controllers
         private readonly IHubContext<DeliveryHub> _hubContext;
         public DeliveriesController(IDeliveryService deliveryService,
             UserManager<UserBase> userManager,
-            IHubContext<ChatHub> hubContext)
+            IHubContext<DeliveryHub> hubContext)
         {
             _deliveryService = deliveryService;
             _userManager = userManager;
-            this._hubContext = hubContext;
+            _hubContext = hubContext;
         }
 
         [HttpPut("updateStatus")]
@@ -39,7 +39,9 @@ namespace Redi.Api.Controllers
 
             var clientId = await _deliveryService.GetDeliveryClientAsync(updateDeliveryStatus.DeliveryId);
 
-            await _hubContext.Clients.Client(clientId).SendAsync("Receive", updateDeliveryStatus.Status.ToString());
+            //await _hubContext.Clients.User(clientId).SendAsync("UpdatePackageStatus", , statuses);
+
+            //public async Task UpdatePackageStatus(string userId, string trackNumber, IReadOnlyCollection<DeliveryStatus> statuses)
 
             return Ok();
         }

@@ -253,5 +253,15 @@ namespace Redi.Application.Services
 
             return delivery.ClientId;
         }
+
+        public Task<string?> GetDeliveryTrackNumberAsync(int deliveryId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IReadOnlyCollection<DeliveryStatus>> GetDeliveryStatuses(string trackNumber)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
