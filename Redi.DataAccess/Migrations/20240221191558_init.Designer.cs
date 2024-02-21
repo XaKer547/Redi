@@ -12,8 +12,8 @@ using Redi.DataAccess.Data;
 namespace Redi.DataAccess.Migrations
 {
     [DbContext(typeof(RediDbContext))]
-    [Migration("20240221102857_Init")]
-    partial class Init
+    [Migration("20240221191558_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -189,15 +189,14 @@ namespace Redi.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("DelivererId")
-                        .IsRequired()
+                    b.Property<string>("DeliverierId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("DelivererId");
+                    b.HasIndex("DeliverierId");
 
                     b.ToTable("Chats");
                 });
@@ -520,20 +519,19 @@ namespace Redi.DataAccess.Migrations
             modelBuilder.Entity("Redi.DataAccess.Data.Entities.Chat", b =>
                 {
                     b.HasOne("Redi.DataAccess.Data.Entities.Users.ClientEntity", "Client")
-                        .WithMany()
+                        .WithMany("Chats")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Redi.DataAccess.Data.Entities.Users.DelivererEntity", "Deliverer")
-                        .WithMany()
-                        .HasForeignKey("DelivererId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Redi.DataAccess.Data.Entities.Users.DelivererEntity", "Deliverier")
+                        .WithMany("Chats")
+                        .HasForeignKey("DeliverierId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Client");
 
-                    b.Navigation("Deliverer");
+                    b.Navigation("Deliverier");
                 });
 
             modelBuilder.Entity("Redi.DataAccess.Data.Entities.ChatMessage", b =>
@@ -556,7 +554,7 @@ namespace Redi.DataAccess.Migrations
                     b.HasOne("Redi.DataAccess.Data.Entities.Users.ClientEntity", "Client")
                         .WithMany("Deliveries")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Redi.DataAccess.Data.Entities.Users.DelivererEntity", "Deliverier")
@@ -598,6 +596,8 @@ namespace Redi.DataAccess.Migrations
                 {
                     b.Navigation("Cards");
 
+                    b.Navigation("Chats");
+
                     b.Navigation("Deliveries");
 
                     b.Navigation("Transactions");
@@ -605,6 +605,8 @@ namespace Redi.DataAccess.Migrations
 
             modelBuilder.Entity("Redi.DataAccess.Data.Entities.Users.DelivererEntity", b =>
                 {
+                    b.Navigation("Chats");
+
                     b.Navigation("Deliveries");
                 });
 #pragma warning restore 612, 618
