@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
 using Redi.DataAccess.Data;
 using Redi.DataAccess.Data.Entities;
 using Redi.Domain.Models.Chats;

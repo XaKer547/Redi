@@ -7,15 +7,14 @@ namespace Redi.DataAccess.Data.Entities
     {
         public Guid Id { get; set; }
 
-        public string ClientId { get; set; }
+        public string ClientId { get; set; } = null!;
         [ForeignKey(nameof(ClientId))]
-        [InverseProperty(nameof(ClientEntity.Chats))]
-        public ClientEntity Client { get; set; }
+        public ClientEntity Client { get; set; } = null!;
 
-        public string DeliverierId { get; set; }
+        public string? DeliverierId { get; set; }
+
         [ForeignKey(nameof(DeliverierId))]
-        [InverseProperty(nameof(DelivererEntity.Chats))]
-        public DelivererEntity Deliverier { get; set; }
+        public DelivererEntity? Deliverier { get; set; }
 
         public ICollection<ChatMessage> Messages { get; set; } = new HashSet<ChatMessage>();
     }

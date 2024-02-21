@@ -21,13 +21,13 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.27" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.27" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.22" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Redi.Application\Redi.Application.csproj" />
-		<ProjectReference Include="..\Redi.DataAccess\Redi.DataAccess.csproj" />
 		<ProjectReference Include="..\Redi.Domain\Redi.Domain.csproj" />
 	</ItemGroup>
 

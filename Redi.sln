@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redi.Domain", "Redi.Domain\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redi.DataAccess", "Redi.DataAccess\Redi.DataAccess.csproj", "{D1FBEB88-2937-4CCB-82AB-E642647A4C74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redi.Application", "Redi.Application\Redi.Application.csproj", "{52E1956E-C491-4538-BFCE-7BB1ED2C9CB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redi.Application", "Redi.Application\Redi.Application.csproj", "{52E1956E-C491-4538-BFCE-7BB1ED2C9CB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
