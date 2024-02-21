@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Redi.DataAccess.Migrations
 {
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -181,8 +181,8 @@ namespace Redi.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DelivererId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DeliverierId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -194,11 +194,10 @@ namespace Redi.DataAccess.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Chats_AspNetUsers_DelivererId",
-                        column: x => x.DelivererId,
+                        name: "FK_Chats_AspNetUsers_DeliverierId",
+                        column: x => x.DeliverierId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -234,8 +233,7 @@ namespace Redi.DataAccess.Migrations
                         name: "FK_Deliveries_AspNetUsers_ClientId",
                         column: x => x.ClientId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Deliveries_AspNetUsers_DeliverierId",
                         column: x => x.DeliverierId,
@@ -371,9 +369,9 @@ namespace Redi.DataAccess.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_DelivererId",
+                name: "IX_Chats_DeliverierId",
                 table: "Chats",
-                column: "DelivererId");
+                column: "DeliverierId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Deliveries_ClientId",

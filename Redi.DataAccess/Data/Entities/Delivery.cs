@@ -8,15 +8,15 @@ namespace Redi.DataAccess.Data.Entities
         public int Id { get; set; }
         public string TrackNumber { get; set; }
 
-        public string ClientId { get; set; }
+        public string ClientId { get; set; } = null!;
+        
         [ForeignKey(nameof(ClientId))]
-        [InverseProperty(nameof(ClientEntity.Deliveries))]
-        public ClientEntity Client { get; set; }
+        public ClientEntity Client { get; set; } = null!;
 
-        public string DeliverierId { get; set; }
+        public string DeliverierId { get; set; } = null!;
+
         [ForeignKey(nameof(DeliverierId))]
-        [InverseProperty(nameof(DelivererEntity.Deliveries))]
-        public DelivererEntity Deliverier { get; set; }
+        public DelivererEntity Deliverier { get; set; } = null!;
 
         public DeliveryTypes DeliveryType { get; set; }
 
