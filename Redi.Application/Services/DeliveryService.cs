@@ -263,5 +263,10 @@ namespace Redi.Application.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task<PackageTrackDTO?> GetDeliveryTrackInfoAsync(string trackNumber)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -13,6 +13,7 @@ using Redi.DataAccess.Data.Entities.Users;
 using Redi.DataAccess.Data.Seeder;
 using Redi.Domain.Services;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using System.Reflection;
 using System.Text;
 
 namespace Redi.Api
@@ -58,15 +59,15 @@ namespace Redi.Api
                     }
                 });
 
-                //string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                //string xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
-                //c.IncludeXmlComments(xmlFilePath);
+                c.IncludeXmlComments(xmlFilePath);
             });
 
             builder.Services.AddSignalR();
 
-            builder.Services.AddDbContext<RediDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")))
+            builder.Services.AddDbContext<RediDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("HomeConnection")))
                 .AddIdentity<UserBase, IdentityRole>(options =>
                 {
                     options.User.RequireUniqueEmail = true;
@@ -100,8 +101,7 @@ namespace Redi.Api
                 opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 opts.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
@@ -122,10 +122,13 @@ namespace Redi.Api
                         var accessToken = context.Request.Query["access_token"];
 
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/delivery-chat"))
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                        (path.StartsWithSegments("/delivery-chat") || path.StartsWithSegments("/delivery-track")))
                         {
                             context.Token = accessToken;
                         }
+
                         return Task.CompletedTask;
                     }
                 };
@@ -157,7 +160,7 @@ namespace Redi.Api
             {
                 var seeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
 
-              //  seeder.SeedAll();
+                //  seeder.SeedAll();
             }
 
             app.MapHub<ChatHub>("/delivery-chat");

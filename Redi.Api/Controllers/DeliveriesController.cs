@@ -39,9 +39,14 @@ namespace Redi.Api.Controllers
 
             var clientId = await _deliveryService.GetDeliveryClientAsync(updateDeliveryStatus.DeliveryId);
 
-            //await _hubContext.Clients.User(clientId).SendAsync("UpdatePackageStatus", , statuses);
+            var trackNumber = await _deliveryService.GetDeliveryTrackNumberAsync(updateDeliveryStatus.DeliveryId);
 
-            //public async Task UpdatePackageStatus(string userId, string trackNumber, IReadOnlyCollection<DeliveryStatus> statuses)
+            if (trackNumber is null)
+                return BadRequest("Доставка не найдена");
+
+            var trackInfo = await _deliveryService.GetDeliveryTrackInfoAsync(trackNumber);
+
+            await _hubContext.Clients.User(clientId).SendAsync("UpdatePackageStatus", trackNumber, trackInfo.Statuses);
 
             return Ok();
         }
@@ -74,8 +79,6 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
-
-
         [HttpPost("new")]
         public async Task<IActionResult> Create(CreateDeliveryDto createDelivery)
         {
@@ -95,6 +98,11 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Закончить доставку
+        /// </summary>
+        /// <param name="endDelivery">DTO с вложенным трек-номером доставки</param>
+        /// <returns></returns>
         [HttpPatch("close")]
         public async Task<IActionResult> EndDelivery(EndDeliveryDTO endDelivery)
         {
