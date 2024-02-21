@@ -37,7 +37,7 @@ namespace Redi.Application.Services
             _context.Chats.Add(new Chat
             {
                 Id = Guid.NewGuid(),
-                Deliverer = (DelivererEntity)deliverer,
+                Deliverier = (DelivererEntity)deliverer,
             });
 
             var delivery = new Delivery

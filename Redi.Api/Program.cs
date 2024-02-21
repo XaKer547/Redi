@@ -66,7 +66,7 @@ namespace Redi.Api
 
             builder.Services.AddSignalR();
 
-            builder.Services.AddDbContext<RediDbContext>(opts => opts.UseInMemoryDatabase("test"))
+            builder.Services.AddDbContext<RediDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")))
                 .AddIdentity<UserBase, IdentityRole>(options =>
                 {
                     options.User.RequireUniqueEmail = true;
@@ -136,16 +136,12 @@ namespace Redi.Api
             builder.Services.AddMvcCore(options => options.EnableEndpointRouting = false);
 
             var app = builder.Build();
-
-            if (app.Environment.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/redi/swagger.json", "Redi API v1");
-                    c.DocExpansion(DocExpansion.None);
-                });
-            }
+                c.SwaggerEndpoint("/swagger/redi/swagger.json", "Redi API v1");
+                c.DocExpansion(DocExpansion.None);
+            });
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -161,7 +157,7 @@ namespace Redi.Api
             {
                 var seeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
 
-                seeder.SeedAll();
+              //  seeder.SeedAll();
             }
 
             app.MapHub<ChatHub>("/delivery-chat");

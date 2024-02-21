@@ -13,6 +13,8 @@ namespace Redi.DataAccess.Data.Entities
         [InverseProperty(nameof(ClientEntity.Deliveries))]
         public ClientEntity Client { get; set; }
 
+        public string DeliverierId { get; set; }
+        [ForeignKey(nameof(DeliverierId))]
         [InverseProperty(nameof(DelivererEntity.Deliveries))]
         public DelivererEntity Deliverier { get; set; }
 

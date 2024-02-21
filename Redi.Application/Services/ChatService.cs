@@ -80,7 +80,7 @@ namespace Redi.Application.Services
                 .Select(c => new ChatPreview
                 {
                     Id = c.Id,
-                    InterlocutorPhoto = c.Deliverer.Picture,
+                    InterlocutorPhoto = c.Deliverier.Picture,
                     LastMessage = c.Messages.OrderBy(x => x.Id)
                     .LastOrDefault().Message
                 }).ToArrayAsync();
