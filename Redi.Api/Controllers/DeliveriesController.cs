@@ -7,6 +7,7 @@ using Redi.Api.Hubs;
 using Redi.DataAccess.Data.Entities.Users;
 using Redi.Domain.Models.Delivery;
 using Redi.Domain.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace Redi.Api.Controllers
 {
@@ -27,11 +28,19 @@ namespace Redi.Api.Controllers
             _hubContext = hubContext;
         }
 
+        /// <summary>
+        /// Обновить статус доставки (для админов)
+        /// </summary>
+        /// <param name="updateDeliveryStatus"></param>
+        /// <returns></returns>
         [HttpPut("updateStatus")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Deliverer")]
         //[ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> UpdateStatus(UpdateDeliveryStatusDTO updateDeliveryStatus)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
             var result = await _deliveryService.UpdateDeliveryStatusAsync(updateDeliveryStatus);
 
             if (!result.Success)
@@ -51,6 +60,28 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Поставить следующий возможный статус доставки
+        /// </summary>
+        /// <param name="deliveryId">Id доставки</param>
+        /// <returns></returns>
+        [HttpHead("nextStatus")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Deliverer")]
+        //[ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<IActionResult> UpdateStatus(int deliveryId)
+        {
+            var result = await _deliveryService.UpdateDeliveryStatusAsync(deliveryId);
+
+            if (!result.Success)
+                return BadRequest(result.Errors);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Получить все доставки (Для Админов)
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("all")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Deliverer")]
         //[ApiExplorerSettings(IgnoreApi = true)]
@@ -61,16 +92,16 @@ namespace Redi.Api.Controllers
             return Ok(deliveries);
         }
 
+        /// <summary>
+        /// Закончить доставку (Для админов)
+        /// </summary>
+        /// <param name="deliveryId">Id доставки</param>
+        /// <returns></returns>
         [HttpHead("close")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Deliverer")]
         //[ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> EndDelivery(int deliveryId)
         {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user is null)
-                return BadRequest("Пользователь не найден");
-
             var result = await _deliveryService.EndDeliveryAsync(deliveryId);
 
             if (!result.Success)
@@ -79,6 +110,11 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Создать доставку
+        /// </summary>
+        /// <param name="createDelivery">DTO с информацией о заказе</param>
+        /// <returns></returns>
         [HttpPost("new")]
         public async Task<IActionResult> Create(CreateDeliveryDto createDelivery)
         {
@@ -116,7 +152,7 @@ namespace Redi.Api.Controllers
 
             var isClient = await _deliveryService.IsDeliveryClientAsync(user.Id, endDelivery.TrackNumber);
 
-            if (isClient)
+            if (!isClient)
                 return BadRequest();
 
             var result = await _deliveryService.EndDeliveryAsync(endDelivery.TrackNumber);
@@ -127,14 +163,26 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Оставить отзыв за доставку
+        /// </summary>
+        /// <param name="replyDTO"></param>
+        /// <returns></returns>
         [HttpPost("feedback")]
         public async Task<IActionResult> ReplyOnDelivery(DeliveryFeedbackDTO replyDTO)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
             //ахах, эти данные нигде не используются, значит делать не надо
 
             return Ok();
         }
 
+        /// <summary>
+        /// Получить статусы и местоположение последнего активного заказа
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("last")]
         public async Task<IActionResult> GetLastAvaibleDelivery()
         {
@@ -148,15 +196,20 @@ namespace Redi.Api.Controllers
             return Ok(packageTrack);
         }
 
-        [HttpGet("track")]
-        public async Task<IActionResult> GetDeliveryPackageInfo([FromQuery] string trackNumber)
+        /// <summary>
+        /// Получить подробную информацию о доставке
+        /// </summary>
+        /// <param name="trackNumber">Трэк-номер заказа</param>
+        /// <returns></returns>
+        [HttpGet("{trackNumber}")]
+        public async Task<IActionResult> GetDeliveryPackageInfo(
+        [RegularExpression(@"^R-\d{4}-\d{4}-\d{4}-\d{4}$", ErrorMessage = "Трэк номер должен быть в формате 'R-9999-9999-9999-9999'")]
+        string trackNumber)
         {
-            var exists = await _deliveryService.ExistsAsync(trackNumber);
-
-            if (exists)
-                return BadRequest("Заказ не найден");
-
             var packageInfo = await _deliveryService.GetDeliveryPackageInfoAsync(trackNumber);
+
+            if (packageInfo is null)
+                return BadRequest("Заказ не найден");
 
             return Ok(packageInfo);
         }

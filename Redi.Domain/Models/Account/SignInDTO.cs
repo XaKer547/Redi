@@ -7,7 +7,7 @@ namespace Redi.Domain.Models.Account
     {
         [Required]
         [EmailAddress]
-        [LowerCaseOnly]
+        [LowerCaseOnly(ErrorMessage = "Почта должна быть написана строчными символами")]
         public string Email { get; set; }
 
         [Required]

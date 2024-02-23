@@ -28,14 +28,6 @@ namespace Redi.Api.Controllers
             _accountService = accountService;
         }
 
-        [HttpGet("check")]
-        public async Task<IActionResult> Check()
-        {
-            return Ok("Ае");
-        }
-
-        //ngrok http https://localhost:44394/ --host-header="localhost:44394"
-
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetProfileData()
@@ -45,27 +37,108 @@ namespace Redi.Api.Controllers
             if (user is null)
                 return BadRequest();
 
-            var adsPath = _appEnvironment.WebRootPath + "/ads/";
-
-            var adPaths = Directory.GetFiles(adsPath);
-
-            var ads = adPaths.Select(a => new Advertisment()
+            var profileInfo = new ProfileDTO()
             {
-                Image = a
-            }).ToArray();
+                Id = user.Id,
+                UserName = user.UserName,
+            };
+
+            if (user.Picture is not null)
+            {
+                profileInfo.Picture = $"https://{HttpContext.Request.Host.Value}/{user.Picture}";
+            }
+
+            return Ok(profileInfo);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProfileData(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user is null)
+                return BadRequest("Пользователь не найден");
 
             var profileInfo = new ProfileDTO()
             {
                 Id = user.Id,
                 UserName = user.UserName,
-                Picture = user.Picture,
-                Advertisments = ads,
             };
 
-            if (user is ClientEntity client)
+            if (user.Picture is not null)
             {
-                profileInfo.Balance = client.Balance;
+                profileInfo.Picture = $"https://{HttpContext.Request.Host.Value}/{user.Picture}";
             }
+
+            return Ok(profileInfo);
+        }
+
+        [HttpGet("ads")]
+        public async Task<IActionResult> GetAdsAsync()
+        {
+            var adPaths = Directory.GetFiles(_appEnvironment.WebRootPath + "/ads/");
+
+            var ads = adPaths.Select(a => new Advertisment()
+            {
+                ImageUrl = $"https://{a.Replace(_appEnvironment.WebRootPath, HttpContext.Request.Host.Value)}"
+            }).ToArray();
+
+            return Ok(ads);
+        }
+
+
+        /// <summary>
+        /// Получить информацию о своем кошельке
+        /// </summary>
+        /// <returns>Баланс и история транзакций</returns>
+        [HttpGet("wallet")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Client")]
+        public async Task<IActionResult> GetWalletData()
+        {
+            var user = (ClientEntity)await _userManager.GetUserAsync(User);
+
+            if (user is null)
+                return BadRequest();
+
+            var transactions = await _accountService.GetTransactionHistoryAsync(user.Id);
+
+            var walletInfo = new WalletInfoDTO()
+            {
+                Balance = user.Balance,
+                Transactions = transactions
+            };
+
+            return Ok(walletInfo);
+        }
+
+        /// <summary>
+        /// Повысить свой баланс на 250
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("HESOYAM")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> AddMoney()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user is null)
+                return BadRequest();
+
+            await _accountService.IncreaseBalanceAsync(user.Id);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Устроить раздачу для всех клиентов (Только для админов)
+        /// </summary>
+        /// <param name="money">Сумма денег</param>
+        /// <returns></returns>
+        [HttpGet("Charity")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Deliverer")]
+        public async Task<IActionResult> AddMoney(float money = 300)
+        {
+            await _accountService.IncreaseBalanceAsync(money);
 
             return Ok();
         }
@@ -80,7 +153,7 @@ namespace Redi.Api.Controllers
             if (!image.IsFileAnImage())
                 return BadRequest("Файл не является поддерживаемым изображением");
 
-            var imagePath = _appEnvironment.WebRootPath + "/profiles/" + Guid.NewGuid();
+            var imagePath = _appEnvironment.WebRootPath + "/profiles/" + Guid.NewGuid() + ".png";
 
             using (var fileStream = new FileStream(imagePath, FileMode.Create))
             {
@@ -92,7 +165,7 @@ namespace Redi.Api.Controllers
             if (user is null)
                 return BadRequest("Пользователь не найден");
 
-            var result = await _accountService.UpdateUserProfileAsync(user.Id, imagePath);
+            var result = await _accountService.UpdateUserProfileAsync(user.Id, imagePath.Replace(_appEnvironment.WebRootPath, ""));
 
             if (!result.Success)
                 return BadRequest(result.Errors);
@@ -100,21 +173,7 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProfileData(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
 
-            if (user is null)
-                return BadRequest("Пользователь не найден");
-
-            return Ok(new ProfilePreview()
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Picture = user.Picture,
-            });
-        }
 
         [HttpPost("RequestPasswordReset")]
         public async Task<IActionResult> RequestPasswordResetAsync(PasswordRecoveryRequestDTO request)

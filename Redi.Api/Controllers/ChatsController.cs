@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Redi.DataAccess.Data.Entities.Users;
 using Redi.Domain.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace Redi.Api.Controllers
 {
@@ -34,22 +35,24 @@ namespace Redi.Api.Controllers
         }
 
         [HttpGet("{chatId}")]
-        public async Task<IActionResult> GetChat(string chatId)
+        public async Task<IActionResult> GetChat([Required] Guid chatId)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
                 return BadRequest("Пользователь не найден");
 
-            var chatGuid = Guid.Parse(chatId);
-            var isChatPart = await _chatService.CheckJoinAsync(user.Id, chatGuid);
+            var isChatPart = await _chatService.CheckJoinAsync(user.Id, chatId);
 
             if (!isChatPart)
             {
                 return BadRequest();
             }
 
-            var chat = await _chatService.GetChatAsync(chatGuid);
+            var chat = await _chatService.GetChatAsync(chatId);
 
             if (chat is null)
                 return BadRequest();

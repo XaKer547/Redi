@@ -6,6 +6,13 @@ namespace Redi.DataAccess.Data.Seeder
     {
         public async Task SeedDeliverersAsync()
         {
+            var role = Roles.Deliverer.ToString();
+
+            var users = _userManager.GetUsersInRoleAsync(role).GetAwaiter().GetResult();
+
+            if (users.Any())
+                return;
+
             var deliverers = new List<SeedableUser<DelivererEntity>>
             {
                 new()
@@ -54,14 +61,13 @@ namespace Redi.DataAccess.Data.Seeder
                 },
             };
 
-            var role = Roles.Deliverer.ToString();
             foreach (var deliverer in deliverers)
             {
                 var user = deliverer.User;
 
-                await _userManager.CreateAsync(user, deliverer.Password);
+                _userManager.CreateAsync(user, deliverer.Password).Wait();
 
-                await _userManager.AddToRoleAsync(user, role);
+                _userManager.AddToRoleAsync(user, role).Wait();
             }
 
             await _context.SaveChangesAsync();

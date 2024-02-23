@@ -9,7 +9,16 @@ namespace Redi.Application.Helpers
         {
             IGeocoder geocoder = new GoogleGeocoder();
 
-            var addresses = await geocoder.GeocodeAsync(address);
+            IEnumerable<Address> addresses;
+
+            try
+            {
+                addresses = await geocoder.GeocodeAsync(address).WaitAsync(TimeSpan.FromSeconds(2.5));
+            }
+            catch
+            {
+                return null;
+            }
 
             return addresses.FirstOrDefault()?.Coordinates;
         }

@@ -17,7 +17,6 @@ namespace Redi.DataAccess.Data.Seeder
         public async void SeedAll()
         {
             await SeedRolesAsync();
-            //await SeedClients();
 
             await SeedDeliverersAsync();
         }

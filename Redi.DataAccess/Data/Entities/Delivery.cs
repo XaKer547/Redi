@@ -9,7 +9,7 @@ namespace Redi.DataAccess.Data.Entities
         public string TrackNumber { get; set; }
 
         public string ClientId { get; set; } = null!;
-        
+
         [ForeignKey(nameof(ClientId))]
         public ClientEntity Client { get; set; } = null!;
 

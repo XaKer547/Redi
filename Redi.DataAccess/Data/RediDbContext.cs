@@ -8,9 +8,7 @@ namespace Redi.DataAccess.Data
     public class RediDbContext : IdentityDbContext<UserBase>
     {
         public DbSet<Chat> Chats { get; set; }
-
         public DbSet<Delivery> Deliveries { get; set; }
-
         public DbSet<DeliveryState> DeliveryStates { get; set; }
 
         public RediDbContext(DbContextOptions options) : base(options) { }

@@ -8,17 +8,16 @@ namespace Redi.DataAccess.Data.Seeder
 
         public async Task SeedRolesAsync()
         {
+            if (_roleManager.Roles.Any())
+                return;
+
             var roles = Enum.GetValues(typeof(Roles));
 
             foreach (var role in roles)
             {
                 var roleName = role.ToString();
 
-                await _roleManager.CreateAsync(new IdentityRole()
-                {
-                    Name = roleName,
-                    NormalizedName = roleName.ToLower()
-                });
+                _roleManager.CreateAsync(new IdentityRole(roleName)).Wait();
             }
 
             await _context.SaveChangesAsync();

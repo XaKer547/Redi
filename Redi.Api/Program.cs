@@ -160,7 +160,7 @@ namespace Redi.Api
             {
                 var seeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
 
-                //  seeder.SeedAll();
+                seeder.SeedAll();
             }
 
             app.MapHub<ChatHub>("/delivery-chat");

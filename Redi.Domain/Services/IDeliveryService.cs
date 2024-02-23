@@ -14,6 +14,7 @@ namespace Redi.Domain.Services
         Task<PackageTrackDTO?> GetDeliveryTrackInfoAsync(string trackNumber);
         Task<PackageInfoDTO?> GetDeliveryPackageInfoAsync(string trackNumber);
         Task<ServiceResult> UpdateDeliveryStatusAsync(UpdateDeliveryStatusDTO updateDelivery);
+        Task<ServiceResult> UpdateDeliveryStatusAsync(int deliveryId);
         Task<IReadOnlyCollection<DeliveryDto>> GetDeliveriesAsync();
         Task<string?> GetDeliveryClientAsync(int deliveryId);
         Task<string?> GetDeliveryTrackNumberAsync(int deliveryId);

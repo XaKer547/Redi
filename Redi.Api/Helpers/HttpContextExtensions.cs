@@ -13,8 +13,10 @@ namespace Redi.Api.Helpers
 
             var os = c.OS.ToString();
             var browser = c.UA.ToString();
-            //var ip = Request.HttpContext.Connection.RemoteIpAddress?.ToString();
-            var ip = "87.76.9.110";
+
+            var remoteAdress = context.Request.HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            var ip = remoteAdress != "::1" ? remoteAdress : "87.76.9.110";
 
             var info = await _client.GetFromJsonAsync<IpInfo>($"http://ip-api.com/json/{ip}");
 

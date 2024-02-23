@@ -1,6 +1,6 @@
-﻿namespace Redi.DataAccess.Data.Entities
+﻿namespace Redi.Domain.Models.Account
 {
-    public class Transaction
+    public class TransactionDTO
     {
         public int Id { get; set; }
         public float Money { get; set; }

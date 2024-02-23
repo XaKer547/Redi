@@ -10,14 +10,16 @@ namespace Redi.Api.Infrastructure
     {
         private readonly ILogger<MailService> _logger;
         private readonly SMTPConfiguration _sMTPConfiguration = new();
-
+        private readonly IHttpContextAccessor _httpAccessor;
         public MailService(
             IConfiguration configuration,
-            ILogger<MailService> logger)
+            ILogger<MailService> logger,
+            IHttpContextAccessor httpAccessor)
         {
             configuration.GetSection("Authentication:Mail").Bind(_sMTPConfiguration);
 
             _logger = logger;
+            _httpAccessor = httpAccessor;
         }
 
         public async Task SendOtpCodeAsync(string email, string code, PasswordRevoveryInfo requestInfo)
@@ -32,7 +34,8 @@ namespace Redi.Api.Infrastructure
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 Credentials = new NetworkCredential(_sMTPConfiguration.Email, _sMTPConfiguration.Password)
             };
-            var imgPath = "https://localhost:7024"; //пока хостинг не развернешь как надо и не мечтай о картинках
+
+            var imgPath = $"https://{_httpAccessor.HttpContext?.Request.Host.Value}";
 
             var mailBody = "<table lang=\"x-class-body\" style=\"border-spacing:0;border-collapse:collapse;vertical-align:top;background:#407BFF;text-align:left;height:100%;width:100%;padding:0;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;line-height:19px;font-size:14px;color:#222222\" width=\"100%\" valign=\"top\" align=\"left\"> <tbody> <tr style=\"padding:0;vertical-align:top;text-align:left;background-color:#0560FA\" valign=\"top\" align=\"left\" bgcolor=\"#262626\"> <td align=\"center\" valign=\"top\" style=\"vertical-align:top;word-wrap:break-word;border-collapse:collapse;padding:0;line-height:19px;color:#EC8000;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;font-size:14px;text-align:center\"> <center style=\"width:100%;min-width:580px\"> <table lang=\"x-class-container\" style=\"border-spacing:0;border-collapse:collapse;padding:0;vertical-align:top;text-align:inherit;width:580px;margin:0 auto\" width=\"580\" valign=\"top\" align=\"inherit\"> <tbody> <tr style=\"padding:0;vertical-align:top;text-align:left;height:10px\" valign=\"top\" align=\"left\"> <td style=\"vertical-align:top;word-wrap:break-word;border-collapse:collapse;padding:0;text-align:left;color:#EC8000;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;font-size:14px;line-height:10px\" valign=\"top\" align=\"left\">&nbsp;</td> </tr> <tr style=\"padding:0;vertical-align:top;text-align:left\" valign=\"top\" align=\"left\"> <td style=\"vertical-align:top;word-wrap:break-word;border-collapse:collapse;padding:0;text-align:left;color:#EC8000;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;line-height:19px;font-size:14px\" valign=\"top\" align=\"left\"> " +
              $"<img src=\"{imgPath}/assets/redi_logo.svg\" style=\"outline:none;text-decoration:none;width:auto;max-width:100%;float:left;clear:both;display:block;border:none;height:49px\" /> </td> </tr> <tr style=\"padding:0;vertical-align:top;text-align:left;height:10px\" valign=\"top\" align=\"left\"> <td style=\"vertical-align:top;word-wrap:break-word;border-collapse:collapse;padding:0;text-align:left;color:#EC8000;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;font-size:14px;line-height:10px\" valign=\"top\" align=\"left\">&nbsp;</td> </tr> </tbody> </table> </center> </td> </tr> <tr style=\"padding:0;vertical-align:top;text-align:left\" valign=\"top\" align=\"left\"> <td align=\"center\" valign=\"top\" height=\"11\" style=\"vertical-align:top;font-size:14px;border-collapse:collapse;padding:0;word-wrap:break-word;line-height:19px;color:#EC8000;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;text-align:center;height:11px\"> &nbsp; </td> </tr> <tr style=\"padding:0;vertical-align:top;text-align:left\" valign=\"top\" align=\"left\"> <td align=\"center\" valign=\"top\" style=\"vertical-align:top;word-wrap:break-word;border-collapse:collapse;padding:0;line-height:19px;color:#EC8000;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;font-size:14px;text-align:center\"> <table style=\"border-spacing:0;border-collapse:collapse;padding:0;vertical-align:top;background:#fff;text-align:inherit;width:580px;margin:0 auto\" width=\"580\" valign=\"top\" align=\"inherit\"> <tbody> <tr style=\"padding:0;vertical-align:top;text-align:left\" valign=\"top\" align=\"left\"> <td lang=\"x-class-container__padding\" style=\"text-align:left;word-wrap:break-word;border-collapse:collapse;padding:0;vertical-align:top;color:#222222;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;line-height:19px;font-size:14px;width:30px\" width=\"30\" valign=\"top\" align=\"left\"></td> <td style=\"vertical-align:top;word-wrap:break-word;border-collapse:collapse;padding:0;text-align:left;color:#222222;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;line-height:19px;font-size:14px\" valign=\"top\" align=\"left\"> <table style=\"border-spacing:0;border-collapse:collapse;padding:0;vertical-align:top;text-align:left\" valign=\"top\" align=\"left\"> <tbody> <tr style=\"padding:0;vertical-align:top;text-align:left;color:#262626\" valign=\"top\" align=\"left\"> <td style=\"vertical-align:top;word-wrap:break-word;border-collapse:collapse;padding:0;text-align:left;color:#222222;font-family:Lato,Arial,sans-serif;font-weight:normal;margin:0;line-height:19px;font-size:14px\" valign=\"top\" align=\"left\"> <h1 style=\"color:#222222;font-family:Lato,Arial,sans-serif;padding:0;margin:0;line-height:1.3;word-break:normal;font-weight:700;font-size:26px;margin-top:1em;text-align:center\"> Востановление пароля </h1>" +

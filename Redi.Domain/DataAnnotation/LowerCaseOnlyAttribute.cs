@@ -9,11 +9,6 @@ namespace Redi.Domain.DataAnnotation
         public bool AllowEmptyStrings { get; set; }
         public override bool IsValid(object? value)
         {
-            if (value == null)
-            {
-                return false;
-            }
-
             return AllowEmptyStrings || value is not string stringValue || !string.IsNullOrWhiteSpace(stringValue) || !stringValue.Any(c => char.IsUpper(c));
         }
     }
