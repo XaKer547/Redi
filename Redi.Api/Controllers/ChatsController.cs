@@ -21,6 +21,10 @@ namespace Redi.Api.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Получить все свои чаты
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetChats()
         {
@@ -34,6 +38,11 @@ namespace Redi.Api.Controllers
             return Ok(chats);
         }
 
+        /// <summary>
+        /// Открыть чат
+        /// </summary>
+        /// <param name="chatId">Guid чата</param>
+        /// <returns></returns>
         [HttpGet("{chatId}")]
         public async Task<IActionResult> GetChat([Required] Guid chatId)
         {

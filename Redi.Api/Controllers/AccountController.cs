@@ -28,6 +28,10 @@ namespace Redi.Api.Controllers
             _accountService = accountService;
         }
 
+        /// <summary>
+        /// Получить информацию о себе
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetProfileData()
@@ -51,6 +55,11 @@ namespace Redi.Api.Controllers
             return Ok(profileInfo);
         }
 
+        /// <summary>
+        /// Получить информацию о пользователе
+        /// </summary>
+        /// <param name="id">Id пользователя</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProfileData(string id)
         {
@@ -73,6 +82,10 @@ namespace Redi.Api.Controllers
             return Ok(profileInfo);
         }
 
+        /// <summary>
+        /// Получить рекламные билборды
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("ads")]
         public async Task<IActionResult> GetAdsAsync()
         {
@@ -85,7 +98,6 @@ namespace Redi.Api.Controllers
 
             return Ok(ads);
         }
-
 
         /// <summary>
         /// Получить информацию о своем кошельке
@@ -130,7 +142,7 @@ namespace Redi.Api.Controllers
         }
 
         /// <summary>
-        /// Устроить раздачу для всех клиентов (Только для админов)
+        /// Повысить баланс всех клиентов (Для админов)
         /// </summary>
         /// <param name="money">Сумма денег</param>
         /// <returns></returns>
@@ -143,6 +155,11 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Обновить картинку профиля
+        /// </summary>
+        /// <param name="image">новая картинка профиля</param>
+        /// <returns></returns>
         [HttpPost("UpdateProfile")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdateUserProfile(IFormFile image)
@@ -173,8 +190,11 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
-
-
+        /// <summary>
+        /// Запросить востановление пароля
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("RequestPasswordReset")]
         public async Task<IActionResult> RequestPasswordResetAsync(PasswordRecoveryRequestDTO request)
         {
@@ -197,6 +217,11 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Подтвердить востановление пароля
+        /// </summary>
+        /// <param name="verification"></param>
+        /// <returns></returns>
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordDTO verification)
         {

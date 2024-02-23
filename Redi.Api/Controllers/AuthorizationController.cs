@@ -20,6 +20,11 @@ namespace Redi.Api.Controllers
             _jwtService = jwtService;
         }
 
+        /// <summary>
+        /// Авторизоваться через Google
+        /// </summary>
+        /// <param name="token">Токен авторизации google аккаунта</param>
+        /// <returns></returns>
         [HttpPost("SignInViaGoogle")]
         public async Task<IActionResult> SignInViaGoogle([FromBody] string token)
         {
@@ -61,6 +66,11 @@ namespace Redi.Api.Controllers
             return Ok(_jwtService.CreateToken(user.Id, Roles.Client.ToString()));
         }
 
+        /// <summary>
+        /// Зарегистрироваться
+        /// </summary>
+        /// <param name="signUp">Данные для регистрации</param>
+        /// <returns></returns>
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUpAsync(SignUpDTO signUp)
         {
@@ -88,6 +98,11 @@ namespace Redi.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Авторизоваться
+        /// </summary>
+        /// <param name="signIn">Данные для входа</param>
+        /// <returns></returns>
         [HttpPost("SignIn")]
         public async Task<IActionResult> SignInAsync(SignInDTO signIn)
         {

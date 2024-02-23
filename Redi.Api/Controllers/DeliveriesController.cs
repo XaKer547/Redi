@@ -29,7 +29,7 @@ namespace Redi.Api.Controllers
         }
 
         /// <summary>
-        /// Обновить статус доставки (для админов)
+        /// Обновить статус доставки (Для админов)
         /// </summary>
         /// <param name="updateDeliveryStatus"></param>
         /// <returns></returns>
@@ -61,7 +61,7 @@ namespace Redi.Api.Controllers
         }
 
         /// <summary>
-        /// Поставить следующий возможный статус доставки
+        /// Поставить следующий возможный статус доставки (Для админов)
         /// </summary>
         /// <param name="deliveryId">Id доставки</param>
         /// <returns></returns>
@@ -79,7 +79,7 @@ namespace Redi.Api.Controllers
         }
 
         /// <summary>
-        /// Получить все доставки (Для Админов)
+        /// Получить все доставки (Для админов)
         /// </summary>
         /// <returns></returns>
         [HttpGet("all")]
@@ -111,11 +111,31 @@ namespace Redi.Api.Controllers
         }
 
         /// <summary>
+        /// Получить статусы и местоположение активного заказа (Для админов)
+        /// </summary>
+        /// <param name="deliveryId">Id доставки</param>
+        /// <returns></returns>
+        [HttpGet("track")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Deliverer")]
+        public async Task<IActionResult> GetPackageTrack(int deliveryId)
+        {
+            var trackNumber = await _deliveryService.GetDeliveryTrackNumberAsync(deliveryId);
+
+            if (trackNumber is null)
+                return BadRequest();
+
+            var trackInfo = await _deliveryService.GetDeliveryTrackInfoAsync(trackNumber);
+
+            return Ok(trackInfo);
+        }
+
+        /// <summary>
         /// Создать доставку
         /// </summary>
         /// <param name="createDelivery">DTO с информацией о заказе</param>
         /// <returns></returns>
         [HttpPost("new")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Client")]
         public async Task<IActionResult> Create(CreateDeliveryDto createDelivery)
         {
             if (!ModelState.IsValid)
@@ -184,6 +204,7 @@ namespace Redi.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("last")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Client")]
         public async Task<IActionResult> GetLastAvaibleDelivery()
         {
             var user = await _userManager.GetUserAsync(User);
