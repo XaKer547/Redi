@@ -67,7 +67,7 @@ namespace Redi.Api
 
             builder.Services.AddSignalR();
 
-            builder.Services.AddDbContext<RediDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")))
+            builder.Services.AddDbContext<RediDbContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("HomeConnection")))
                 .AddIdentity<UserBase, IdentityRole>(options =>
                 {
                     options.User.RequireUniqueEmail = true;
