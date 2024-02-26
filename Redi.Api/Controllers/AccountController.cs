@@ -127,7 +127,7 @@ namespace Redi.Api.Controllers
         /// Повысить свой баланс на 250
         /// </summary>
         /// <returns></returns>
-        [HttpGet("HESOYAM")]
+        [HttpHead("HESOYAM")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> AddMoney()
         {
@@ -146,7 +146,7 @@ namespace Redi.Api.Controllers
         /// </summary>
         /// <param name="money">Сумма денег</param>
         /// <returns></returns>
-        [HttpGet("Charity")]
+        [HttpHead("Charity")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Deliverer")]
         public async Task<IActionResult> AddMoney(float money = 300)
         {
