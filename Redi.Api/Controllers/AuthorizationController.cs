@@ -82,13 +82,15 @@ namespace Redi.Api.Controllers
             if (user is not null)
                 return BadRequest("Эта почта уже занята");
 
-            var result = await _userManager.CreateAsync(new ClientEntity()
+            user = new ClientEntity()
             {
                 PhoneNumber = signUp.PhoneNumber,
                 Email = signUp.Email,
                 UserName = signUp.Fullname,
                 Balance = 4000,
-            }, signUp.Password);
+            };
+
+            var result = await _userManager.CreateAsync(user, signUp.Password);
 
             await _userManager.AddToRoleAsync(user, Roles.Client.ToString());
 
