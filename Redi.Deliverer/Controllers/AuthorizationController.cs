@@ -58,6 +58,8 @@ namespace Redi.Deliverer.Controllers
         [HttpGet]
         public async Task<IActionResult> Authorize(string email, string password)
         {
+            return RedirectToActionPermanent(nameof(Index), "Home");
+
             var model = new Domain.Models.Account.SignInDTO()
             {
                 Email = email,

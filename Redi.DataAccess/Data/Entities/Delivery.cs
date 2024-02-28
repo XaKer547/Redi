@@ -36,7 +36,7 @@ namespace Redi.DataAccess.Data.Entities
 
         #region OtherDetails
         public string PackageName { get; set; }
-        public string PackageWeight { get; set; }
+        public float PackageWeight { get; set; }
         public float WorthOfItems { get; set; }
         #endregion
 

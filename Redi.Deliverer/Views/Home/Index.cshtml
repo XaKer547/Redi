@@ -1,13 +1,24 @@
 ﻿@{
-    ViewData["Title"] = "";
+    ViewData["Title"] = "Меню";
 }
 
-<div class="d-flex">
-    <a class="btn btn-primary">
-
-    </a>
-
-    <a class="btn btn-primary">
-
-    </a>
+<div class="container">
+    <div class="row">
+        <div class="p-2 col-6">
+            <a class="btn btn-primary w-100" href="@Url.Action("Index", "Chats")">
+                <div class="col d-flex justify-content-center">
+                    <img style="height:100px;" src="~/icons/chat_icon.svg" />
+                </div>
+                Чаты
+            </a>
+        </div>
+        <div class="p-2 col-6">
+            <a class="btn btn-primary w-100" href="@Url.Action("Index", "Delivery")">
+                <div class="col d-flex justify-content-center">
+                    <img style="height:100px" src="~/icons/delivery_icon.svg" />
+                </div>
+                Доставки
+            </a>
+        </div>
+    </div>
 </div>

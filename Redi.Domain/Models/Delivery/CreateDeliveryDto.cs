@@ -32,7 +32,7 @@ namespace Redi.Domain.Models.Delivery
         public string PackageName { get; set; }
 
         [Required]
-        public string PackageWeight { get; set; }
+        public float PackageWeight { get; set; }
 
         [Required]
         public float WorthOfItems { get; set; }

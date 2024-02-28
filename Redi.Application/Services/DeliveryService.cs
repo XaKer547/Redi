@@ -58,7 +58,7 @@ namespace Redi.Application.Services
                 DeliveryType = deliveryDto.IsInstantDelivery ? DeliveryTypes.Instant : DeliveryTypes.Scheduled,
                 OrderStates = new List<DeliveryState>()
                 {
-                    new DeliveryState()
+                    new()
                     {
                         CreatedDate = DateTime.Now,
                         Status = DeliveryStatuses.Requested
@@ -323,7 +323,8 @@ namespace Redi.Application.Services
 
         public async Task<IReadOnlyCollection<DeliveryStatus>> GetDeliveryStatuses(string trackNumber)
         {
-            var delivery = await _context.Deliveries.Include(d => d.OrderStates).SingleOrDefaultAsync(d => d.TrackNumber == trackNumber);
+            var delivery = await _context.Deliveries.Include(d => d.OrderStates)
+                .SingleOrDefaultAsync(d => d.TrackNumber == trackNumber);
 
             if (delivery is null)
                 return null;

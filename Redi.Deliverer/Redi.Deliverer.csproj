@@ -15,9 +15,4 @@
     <ProjectReference Include="..\Redi.Domain\Redi.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\Delivery\" />
-    <Folder Include="Views\Chats\" />
-  </ItemGroup>
-
 </Project>
