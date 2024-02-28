@@ -1,0 +1,17 @@
+﻿@model AuthorizationViewModel
+@{
+    ViewData["Title"] = "Авторизация";
+}
+
+<div>Выберите доставщика</div>
+@foreach (var deliverer in Model.Deliverers)
+{
+    <button class="rounded btn btn-primary" type="submit" onclick="location.href='@Url.Action("Authorize", "Authorization", new {Email = deliverer.Email, Password = deliverer.Password})'">
+        <div>
+            @deliverer.Fullname
+        </div>
+        <div>
+            @deliverer.Email
+        </div>
+    </button>
+}

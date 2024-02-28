@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.27" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Redi.Application\Redi.Application.csproj" />
+    <ProjectReference Include="..\Redi.Domain\Redi.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Delivery\" />
+    <Folder Include="Views\Chats\" />
+  </ItemGroup>
+
+</Project>
