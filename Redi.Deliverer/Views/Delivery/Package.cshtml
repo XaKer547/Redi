@@ -44,7 +44,7 @@
                 url: "/Delivery/UpdatePackageStatus",
                 data: { 'deliveryId': @Model.Id },
                 success: function () {
-                    window.location.href = '@Url.Action("Package", "Delivery", new { Model.TrackNumber })';
+                    window.location.href = '@Url.Action("Package", "Delivery", new { DeliveryId = Model.Id })';
                 },
                 error: function (error) {
                     alert(error)

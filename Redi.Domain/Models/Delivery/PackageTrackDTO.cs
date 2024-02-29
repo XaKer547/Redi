@@ -4,6 +4,7 @@ namespace Redi.Domain.Models.Delivery
 {
     public class PackageTrackDTO
     {
+        public int Id { get; set; }
         public string TrackNumber { get; set; }
 
         public Location OriginPoint { get; set; }

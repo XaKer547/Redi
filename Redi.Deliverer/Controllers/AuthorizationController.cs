@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Redi.Deliverer.Models;
+using Redi.Domain.Models.Account;
 using Redi.Domain.Services;
+using System;
 using System.Security.Claims;
 
 namespace Redi.Deliverer.Controllers
@@ -55,31 +57,15 @@ namespace Redi.Deliverer.Controllers
             return View(viewModel);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Authorize(string email, string password)
+        [HttpPost]
+        public async Task<IActionResult> Authorize(SignInDTO signIn)
         {
-            return RedirectToActionPermanent(nameof(Index), "Home");
+            var result = await _provider.Authorize(signIn);
 
-            var model = new Domain.Models.Account.SignInDTO()
-            {
-                Email = email,
-                Password = password
-            };
-
-            var response = await _provider.Authorize(model);
-
-            if (!response.Success)
+            if (!result.Success)
                 return RedirectToAction(nameof(Index));
 
-            var claims = new List<Claim>()
-            {
-                new Claim(ClaimTypes.Role, "Deliverer"),
-                new Claim(ClaimTypes.Email, email),
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+            HttpContext.Session.SetString("Token", result.Token);
 
             return RedirectToActionPermanent(nameof(Index), "Home");
         }

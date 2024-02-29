@@ -4,7 +4,7 @@
 
     @foreach (var delivery in Model.Deliveries)
     {
-        <a class="btn btn-primary m-2" href="@Url.Action("Package","Delivery", new {delivery.TrackNumber})">
+        <a class="btn btn-primary m-2" href="@Url.Action("Package","Delivery", new {DeliveryId = delivery.Id})">
             @delivery.TrackNumber
         </a>
     }

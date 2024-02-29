@@ -305,6 +305,7 @@ namespace Redi.Application.Services
 
             var trackInfo = new PackageTrackDTO()
             {
+                Id = delivery.Id,
                 TrackNumber = delivery.TrackNumber,
                 DestinationPoint = destinationPoint,
                 OriginPoint = originPoint,

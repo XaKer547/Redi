@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Redi.Application.Services;
+using Redi.Deliverer.Handlers;
 using Redi.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,15 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 
-builder.Services.AddScoped<IRediApiProvider, RediApiProvider>();
-//builder.Services.AddHttpClient();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-    {
-        options.LoginPath = "/Authorization";
-        options.ExpireTimeSpan = TimeSpan.FromDays(7);
-    });
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+});
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddTransient<ApiAuthenticationHttpClientHandler>();
+
+builder.Services.AddHttpClient<IRediApiProvider, RediApiProvider>()
+    .ConfigureHttpClient(c => c.BaseAddress = new Uri(builder.Configuration["Api"]))
+    .AddHttpMessageHandler<ApiAuthenticationHttpClientHandler>();
 
 var app = builder.Build();
 
@@ -29,7 +35,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
+app.UseSession();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

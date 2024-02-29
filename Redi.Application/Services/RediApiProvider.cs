@@ -7,11 +7,11 @@ namespace Redi.Application.Services
 {
     public class RediApiProvider : IRediApiProvider
     {
-        private const string BaseApi = "http://redi.uac:553/";
-        private readonly HttpClient _client = new()
+        private readonly HttpClient _client;
+        public RediApiProvider(HttpClient client)
         {
-            BaseAddress = new Uri(BaseApi)
-        };
+            _client = client;
+        }
 
         public async Task<AuthorizationResult> Authorize(SignInDTO dto)
         {
@@ -38,7 +38,9 @@ namespace Redi.Application.Services
 
         public async Task<T> Get<T>(string url)
         {
-            return await _client.GetFromJsonAsync<T>(url);
+            var response = await _client.GetAsync(url);
+
+            return await response.Content.ReadFromJsonAsync<T>();
         }
 
         public async Task Head(string url)
@@ -77,7 +79,6 @@ namespace Redi.Application.Services
 
             return result;
         }
-
         public async Task Post(string url, object dto)
         {
             await _client.PostAsJsonAsync(url, dto);

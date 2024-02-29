@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Redi.Application.Helpers;
 using Redi.Deliverer.Models;
 using Redi.Domain.Models.Delivery;
@@ -17,59 +18,29 @@ namespace Redi.Deliverer.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var deliveries = await _provider.Get<IReadOnlyCollection<DeliveryDto>>("/api/Deliveries/all");
+
             var model = new DeliveriesViewModel()
             {
-                Deliveries = new List<DeliveryDto>()
-                {
-                    new()
-                    {
-                        Id = 1,
-                        TrackNumber ="aeaeae"
-                    },
-                     new()
-                    {
-                        Id = 1,
-                        TrackNumber ="aeaeae"
-                    },
-                      new()
-                    {
-                        Id = 1,
-                        TrackNumber ="aeaeae"
-                    },
-                       new()
-                    {
-                        Id = 1,
-                        TrackNumber ="aeaeae"
-                    },
-                        new()
-                    {
-                        Id = 1,
-                        TrackNumber ="aeaeae"
-
-                    },
-                }.ToArray()
+                Deliveries = deliveries
             };
 
             return View(model);
         }
 
-        public async Task<IActionResult> Package(string trackNumber)
+        public async Task<IActionResult> Package(int deliveryId)
         {
-            IReadOnlyCollection<DeliveryStatus> statuses = new List<DeliveryStatus>()
-            {
-                new()
-                {
-                    Name = "Requested",
-                    CreatedDate = DateTime.Now
-                }
-            };
+            var trackInfo = await _provider.Get<PackageTrackDTO?>($"api/Deliveries/track?deliveryId={deliveryId}");
 
-            statuses = await FillMock(statuses);
+            if (trackInfo is null)
+                return RedirectToAction("Index");
+
+            var statuses = await FillMock(trackInfo.Statuses);
 
             var viewmodel = new DeliveryViewModel()
             {
-                Id = 1,
-                TrackNumber = trackNumber,
+                Id = trackInfo.Id,
+                TrackNumber = trackInfo.TrackNumber,
                 Statuses = statuses
             };
 
@@ -79,9 +50,9 @@ namespace Redi.Deliverer.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdatePackageStatus(int deliveryId)
         {
-            //await _provider.Head("");
+            await _provider.Head($"api/Deliveries/nextStatus?deliveryId={deliveryId}");
 
-            return Ok();
+            return await Package(deliveryId);
         }
 
         private async Task<IReadOnlyCollection<DeliveryStatus>> FillMock(IReadOnlyCollection<DeliveryStatus> owned)
