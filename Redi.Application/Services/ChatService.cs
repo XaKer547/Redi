@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Redi.DataAccess.Data;
 using Redi.DataAccess.Data.Entities;
+using Redi.DataAccess.Data.Entities.Users;
 using Redi.Domain.Models.Chats;
 using Redi.Domain.Services;
 using Redi.Domain.Services.Response;
@@ -75,14 +76,32 @@ namespace Redi.Application.Services
         {
             var user = _context.Users.SingleOrDefault(u => u.Id == userId);
 
-            var chats = await _context.Chats.Where(x => x.Client.Id == userId)
-                .Select(c => new ChatPreview
-                {
-                    Id = c.Id,
-                    InterlocutorPhoto = c.Deliverier.Picture,
-                    LastMessage = c.Messages.OrderBy(x => x.Id)
-                    .LastOrDefault().Message
-                }).ToArrayAsync();
+            ChatPreview[] chats;
+
+            if (user is ClientEntity)
+            {
+                chats = await _context.Chats.Where(x => x.Client.Id == userId)
+                    .Select(c => new ChatPreview
+                    {
+                        Id = c.Id,
+                        InterlocutorFullname = c.Deliverier.UserName,
+                        InterlocutorPhoto = c.Deliverier.Picture,
+                        LastMessage = c.Messages.OrderBy(x => x.Id)
+                   .LastOrDefault().Message
+                    }).ToArrayAsync();
+            }
+            else
+            {
+                chats = await _context.Chats.Where(x => x.Client.Id == userId)
+                  .Select(c => new ChatPreview
+                  {
+                      Id = c.Id,
+                      InterlocutorFullname = c.Client.UserName,
+                      InterlocutorPhoto = c.Client.Picture,
+                      LastMessage = c.Messages.OrderBy(x => x.Id)
+                 .LastOrDefault().Message
+                  }).ToArrayAsync();
+            }
 
             return chats;
         }
