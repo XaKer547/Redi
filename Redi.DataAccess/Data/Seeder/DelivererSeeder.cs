@@ -33,9 +33,9 @@ namespace Redi.DataAccess.Data.Seeder
                        UserName = "Dalston Batteson",
                        Email = "dbattesong@state.tx.us",
                        Picture = @"profiles/32c3b22a-1dad-4fc8-b960-92ffcb931e05.png",
-                       PhoneNumber = "+559519728215"
+                       PhoneNumber = "+559519728215",
                     },
-                    Password = "thMgNwS)ZyB"
+                    Password = "thMgNwS)ZyB",
                 },
                 new()
                 {
