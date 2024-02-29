@@ -49,7 +49,7 @@ namespace Redi.Api.Controllers
 
             if (user.Picture is not null)
             {
-                profileInfo.Picture = $"https://{HttpContext.Request.Host.Value}/{user.Picture}";
+                profileInfo.Picture = $"http://{HttpContext.Request.Host.Value}/{user.Picture}";
             }
 
             return Ok(profileInfo);
@@ -76,7 +76,7 @@ namespace Redi.Api.Controllers
 
             if (user.Picture is not null)
             {
-                profileInfo.Picture = $"https://{HttpContext.Request.Host.Value}/{user.Picture}";
+                profileInfo.Picture = $"http://{HttpContext.Request.Host.Value}/{user.Picture}";
             }
 
             return Ok(profileInfo);
@@ -91,10 +91,8 @@ namespace Redi.Api.Controllers
         {
             var adPaths = Directory.GetFiles(_appEnvironment.WebRootPath + "/ads/");
 
-            var ads = adPaths.Select(a => new Advertisment()
-            {
-                ImageUrl = $"https://{a.Replace(_appEnvironment.WebRootPath, HttpContext.Request.Host.Value)}"
-            }).ToArray();
+            var ads = adPaths.Select(a => $"http://{a.Replace(_appEnvironment.WebRootPath, HttpContext.Request.Host.Value)}")
+                .ToArray();
 
             return Ok(ads);
         }
