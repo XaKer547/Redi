@@ -15,7 +15,7 @@
         public string DestinationOthers { get; set; }
 
         public string PackageName { get; set; }
-        public string PackageWeight { get; set; }
+        public float PackageWeight { get; set; }
         public float WorthOfItems { get; set; }
 
         public float DeliveryCharges { get; set; }

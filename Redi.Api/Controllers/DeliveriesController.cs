@@ -129,6 +129,22 @@ namespace Redi.Api.Controllers
             return Ok(trackInfo);
         }
 
+
+        /// <summary>
+        /// Получить подробную информацию о доставке (Для админов)
+        /// </summary>
+        /// <param name="deliveryId">Id доставки</param>
+        /// <returns></returns>
+        [HttpGet("info")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Deliverer")]
+        public async Task<IActionResult> GetDeliveryPackageInfo(int deliveryId)
+        {
+            var trackNumber = await _deliveryService.GetDeliveryTrackNumberAsync(deliveryId);
+
+            return await GetDeliveryPackageInfo(trackNumber);
+        }
+
+
         /// <summary>
         /// Создать доставку
         /// </summary>

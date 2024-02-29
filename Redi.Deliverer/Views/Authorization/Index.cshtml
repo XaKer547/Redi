@@ -1,0 +1,28 @@
+﻿@model AuthorizationViewModel
+@{
+    ViewData["Title"] = "Авторизация";
+}
+
+<div>Выберите доставщика</div>
+@{
+    int i = 0;
+}
+@foreach (var deliverer in Model.Deliverers)
+{
+    <button form="@i-form" class="rounded btn btn-primary mb-2" type="submit">
+        <form id="@i-form" method="post" action="/Authorization/Authorize">
+            <div>
+                @deliverer.Fullname
+            </div>
+
+            @Html.LabelFor(m => m.SignInDTO.Email, deliverer.Email)
+            @Html.HiddenFor(m => m.SignInDTO.Password, deliverer.Password)
+
+            <input hidden asp-for="SignInDTO.Email" name="Email" value="@deliverer.Email" />
+            <input hidden asp-for="SignInDTO.Password" name="Password" value="@deliverer.Password" />
+        </form>
+        @{
+            i++;
+        }
+    </button>
+}
