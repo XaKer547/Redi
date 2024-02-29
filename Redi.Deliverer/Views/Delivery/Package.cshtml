@@ -1,0 +1,55 @@
+﻿@model DeliveryViewModel
+
+<div>
+    <div class="mb-2">Трэк-номер:</div>
+    <div class="mb-4">@Model.TrackNumber</div>
+    <div class="mb-2">Статусы доставки:</div>
+    @foreach (var status in Model.Statuses)
+    {
+        <div class="border-bottom">
+            <div>
+                @status.Name
+            </div>
+            <div class="mb-2">
+                @if (status.CreatedDate.HasValue)
+                {
+                    <div>@status.CreatedDate</div>
+                }
+                else
+                {
+                    <div>-</div>
+                }
+            </div>
+        </div>
+    }
+    @if (Model.CanUpdateStatus)
+    {
+        <button class="btn btn-primary mt-5" onclick="updateStatus()">
+            Поставить следующий статус
+        </button>
+    }
+    else
+    {
+        <button class="btn btn-primary mt-5 disabled">
+            Больше статус менять нельзя
+        </button>
+    }
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        function updateStatus() {
+            $.ajax({
+                type: 'POST',
+                url: "/Delivery/UpdatePackageStatus",
+                data: { 'deliveryId': @Model.Id },
+                success: function () {
+                    window.location.href = '@Url.Action("Package", "Delivery", new { DeliveryId = Model.Id })';
+                },
+                error: function (error) {
+                    alert(error)
+                }
+            });
+        }
+    </script>
+}

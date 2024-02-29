@@ -1,0 +1,19 @@
+﻿@model ChatsViewModel
+
+<div>Чаты:</div>
+@foreach (var chat in Model.Chats)
+{
+    <a class="btn btn-outline-primary d-flex my-3 col-2" href="/Chats/@chat.Id">
+        <div class="rounded-circle">
+            <img src="@chat.InterlocutorPhoto" />
+        </div>
+        <div>
+            <div>
+                @chat.InterlocutorFullname
+            </div>
+            <div>
+                @chat.LastMessage
+            </div>
+        </div>
+    </a>
+} 
