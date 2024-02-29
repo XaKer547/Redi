@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Redi.DataAccess.Data;
 
@@ -11,9 +12,10 @@ using Redi.DataAccess.Data;
 namespace Redi.DataAccess.Migrations
 {
     [DbContext(typeof(RediDbContext))]
-    partial class RediDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240229093910_Fixed")]
+    partial class Fixed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
