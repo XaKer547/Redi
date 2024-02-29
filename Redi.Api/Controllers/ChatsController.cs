@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Redi.Application.Models;
 using Redi.DataAccess.Data.Entities.Users;
 using Redi.Domain.Services;
 using System.ComponentModel.DataAnnotations;
@@ -66,7 +67,17 @@ namespace Redi.Api.Controllers
             if (chat is null)
                 return BadRequest();
 
-            return Ok(chat);
+            return Ok(new ChatDto
+            {
+                Id = chat.Id,
+                Messages = chat.Messages.Select(x => new ChatMessageDto
+                {
+                    Id = x.Id,
+                    IsUserSender = user.UserName == x.Sender,
+                    Sender = x.Sender,
+                    Text = x.Text,
+                }).ToArray()
+            });
         }
     }
 }

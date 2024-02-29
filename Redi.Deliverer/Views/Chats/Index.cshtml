@@ -1,19 +1,39 @@
 ﻿@model ChatsViewModel
 
 <div>Чаты:</div>
-@foreach (var chat in Model.Chats)
-{
-    <a class="btn btn-outline-primary d-flex my-3 col-2" href="/Chats/@chat.Id">
-        <div class="rounded-circle">
-            <img src="@chat.InterlocutorPhoto" />
-        </div>
-        <div>
-            <div>
-                @chat.InterlocutorFullname
+<div class="col-2">
+    @foreach (var chat in Model.Chats)
+    {
+        <a class="btn btn-outline-primary d-flex chat-btn" data-chatId="@chat.Id">
+            <div class="rounded-circle">
+                <img src="@chat.InterlocutorPhoto" />
             </div>
             <div>
-                @chat.LastMessage
+                <div>
+                    @chat.InterlocutorFullname
+                </div>
+                <div>
+                    @chat.LastMessage
+                </div>
             </div>
-        </div>
-    </a>
+        </a>
+    }
+</div>
+<div class="col-10">
+    <div id="chat-container"></div>
+</div>
+
+@section Scripts{
+    <script>
+        let $chatContainer = $('#chat-container');
+        $('.chat-btn').on('click', async function () {
+            let chatId = $(this).data('chatid');
+            
+            let response = await $.ajax({
+                url: '@Url.Action("ChatDetails", "Chats")?chatId=' + chatId
+            });
+
+            $chatContainer.html(response);
+        });
+    </script>
 }

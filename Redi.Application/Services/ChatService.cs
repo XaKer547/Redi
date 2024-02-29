@@ -52,7 +52,7 @@ namespace Redi.Application.Services
 
         public async Task<bool> CheckJoinAsync(string userId, Guid chatId)
         {
-            return await _context.Chats.AnyAsync(x => x.Client.Id == userId && x.Id == chatId);
+            return await _context.Chats.AnyAsync(x => (x.Client.Id == userId || x.DeliverierId == userId) && x.Id == chatId);
         }
 
         public async Task<Domain.Models.Chats.Chat> GetChatAsync(Guid chatId)
@@ -92,7 +92,7 @@ namespace Redi.Application.Services
             }
             else
             {
-                chats = await _context.Chats.Where(x => x.Client.Id == userId)
+                chats = await _context.Chats.Where(x => x.DeliverierId == userId)
                   .Select(c => new ChatPreview
                   {
                       Id = c.Id,

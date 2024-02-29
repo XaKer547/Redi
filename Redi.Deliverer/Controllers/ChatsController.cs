@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Redi.Application.Models;
+using Redi.DataAccess.Data.Entities.Users;
 using Redi.Deliverer.Models;
 using Redi.Domain.Models.Chats;
 using Redi.Domain.Services;
@@ -9,6 +12,7 @@ namespace Redi.Deliverer.Controllers
     public class ChatsController : Controller
     {
         private readonly IRediApiProvider _provider;
+
         public ChatsController(IRediApiProvider provider)
         {
             _provider = provider;
@@ -27,12 +31,22 @@ namespace Redi.Deliverer.Controllers
             return View(viewModel);
         }
 
-        [HttpGet("{chatId}")]
-        public async Task<IActionResult> Index(Guid chatId)
+        [HttpGet("ChatDetails")]
+        public async Task<IActionResult> ChatDetails(Guid chatId)
         {
-            var chat = await _provider.Get<IReadOnlyCollection<ChatPreview>>($"api/chats/{chatId}");
+            var chat = await _provider.Get<ChatDto>($"api/chats/{chatId}");
 
-            return View(chatId);
+            var test = User;
+            return PartialView(new ChatDetailsViewModel
+            {
+                ChatId = chatId,
+                Messages = chat.Messages.Select(x => new ChatMessageViewModel
+                {
+                    Sender = x.Sender,
+                    Text = x.Text,
+                    IsUserSender = x.IsUserSender,
+                }).ToArray()
+            });
         }
     }
 }

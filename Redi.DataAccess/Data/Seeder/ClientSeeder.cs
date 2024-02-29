@@ -26,59 +26,6 @@ namespace Redi.DataAccess.Data.Seeder
                         PhoneNumber = "+627988981861",
                     },
                     Password="5PBAhB"
-                },
-                new()
-                {
-                    User = new ClientEntity()
-                    {
-                        UserName = "Daniella Laye",
-                        Email = "dlaye6@zimbio.com",
-                        Balance = 723.49,
-                        Cards = new List<Card>()
-                        {
-
-                        },
-                        PhoneNumber = "+9703637033250",
-                    },
-                    Password = "425$_$utG+0e"
-                },
-                new()
-                {
-                    User = new ClientEntity()
-                    {
-                        UserName = "Burton McFarlane",
-                        Email = "bmcfarlanea@instagram.com",
-                        Balance = 0,
-                        Cards = new List<Card>()
-                        {
-                            new()
-                            {
-
-                            }
-                        },
-                        PhoneNumber = "",
-                        Picture = ""
-                    },
-                    Password = ""
-                },
-                new()
-                {
-                    User = new ClientEntity()
-                    {
-                        UserName = "",
-                        Email = "",
-                        Balance = 0,
-                        Cards = new List<Card>()
-                        {
-                            new()
-                            {
-
-                            }
-                        },
-                        PhoneNumber = "",
-                        Picture = ""
-                    },
-                    Password = ""
                 }
             };
 
